@@ -922,8 +922,8 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(16,	0,	L"coal_block");
 		ADD_ICON(16,	1,	L"hardened_clay");
 		ADD_ICON(16,	2,	L"noteblock");
-		//ADD_ICON(16,	3,	L"unused");
-		//ADD_ICON(16,	4,	L"unused");
+		ADD_ICON(16,	3,	L"stone_diorite");
+		ADD_ICON(16,	4,	L"flower_allium");
 		//ADD_ICON(16,	5,	L"unused");
 		//ADD_ICON(16,	6,	L"unused");
 		//ADD_ICON(16,	7,	L"unused");

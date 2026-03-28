@@ -126,6 +126,9 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"menu2",
 	"menu3",
 	"menu4",
+	//Unused Alpha Tracks
+	"door",
+	"chris",
 #endif
 
 	"piano1",

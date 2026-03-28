@@ -25,6 +25,7 @@ void EnderMan::staticCtor()
 	MAY_TAKE[Tile::gravel_Id] = true;
 	MAY_TAKE[Tile::flower_Id] = true;
 	MAY_TAKE[Tile::rose_Id] = true;
+	MAY_TAKE[Tile::allium_Id] = true;
 	MAY_TAKE[Tile::mushroom_brown_Id] = true;
 	MAY_TAKE[Tile::mushroom_red_Id] = true;
 	MAY_TAKE[Tile::tnt_Id] = true;

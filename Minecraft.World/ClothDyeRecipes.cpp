@@ -46,6 +46,10 @@ void ClothDyeRecipes::addRecipes(Recipes *r)
 		L"tg", 
 		Tile::rose,L'D');
 
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::MAGENTA),
+		L"tg",
+		Tile::allium,L'D');
+
 	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 3, DyePowderItem::WHITE),
 		L"ig", 
 		Item::bone,L'D');

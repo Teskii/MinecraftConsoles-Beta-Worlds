@@ -179,6 +179,18 @@ void ServerPlayerGameMode::stopDestroyBlock(int x, int y, int z)
 		int t = level->getTile(x, y, z);
 		if (t != 0)
 		{
+			// A host-local player has already removed the block client-side once STOP_DESTROY is sent.
+			// If we defer completion here, PlayerConnection will echo the original tile back for a tick.
+			if (player != nullptr && player->connection != nullptr && player->connection->isLocal())
+			{
+				isDestroyingBlock = false;
+				hasDelayedDestroy = false;
+				level->destroyTileProgress(player->entityId, x, y, z, -1);
+				lastSentState = -1;
+				destroyBlock(x, y, z);
+				return;
+			}
+
 			Tile *tile = Tile::tiles[t];
 			// Anti-cheat: re-check destroy progress on the server for STOP_DESTROY.
 			int ticksSpentDestroying = gameTicks - destroyProgressStart;

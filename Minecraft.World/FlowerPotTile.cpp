@@ -130,6 +130,8 @@ shared_ptr<ItemInstance> FlowerPotTile::getItemFromType(int type)
 		return std::make_shared<ItemInstance>(Tile::rose);
 	case TYPE_FLOWER_YELLOW:
 		return std::make_shared<ItemInstance>(Tile::flower);
+	case TYPE_ALLIUM:
+		return std::make_shared<ItemInstance>(Tile::allium);
 	case TYPE_CACTUS:
 		return std::make_shared<ItemInstance>(Tile::cactus);
 	case TYPE_MUSHROOM_BROWN:
@@ -159,6 +161,7 @@ int FlowerPotTile::getTypeFromItem(shared_ptr<ItemInstance> item)
 
 	if (id == Tile::rose_Id) return TYPE_FLOWER_RED;
 	if (id == Tile::flower_Id) return TYPE_FLOWER_YELLOW;
+	if (id == Tile::allium_Id) return TYPE_ALLIUM;
 	if (id == Tile::cactus_Id) return TYPE_CACTUS;
 	if (id == Tile::mushroom_brown_Id) return TYPE_MUSHROOM_BROWN;
 	if (id == Tile::mushroom_red_Id) return TYPE_MUSHROOM_RED;

@@ -292,8 +292,10 @@ bool TileRenderer::tesselateInWorld( Tile* tt, int x, int y, int z, int forceDat
 				// these block types can take advantage of a faster version of shouldRenderFace
 				// there are others but this is an easy check which covers the majority
 				// Note: This now covers rock, grass, dirt, stoneBrice, wood, sapling, unbreakable, sand, gravel, goldOre, ironOre, coalOre, treeTrunk
+				// and any extra full-block fillers we explicitly wire in here.
 				if( ( tt->id <= Tile::unbreakable_Id  ) ||
-					( ( tt->id >= Tile::sand_Id ) && ( tt->id <= Tile::treeTrunk_Id ) ) )
+					( ( tt->id >= Tile::sand_Id ) && ( tt->id <= Tile::treeTrunk_Id ) ) ||
+					( tt->id == Tile::diorite_Id ) )
 				{
 					faceFlags = tt->getFaceFlags( level, x, y, z );
 				}
@@ -916,6 +918,9 @@ bool TileRenderer::tesselateFlowerPotInWorld(FlowerPotTile *tt, int x, int y, in
 			break;
 		case FlowerPotTile::TYPE_FLOWER_YELLOW:
 			plant = Tile::flower;
+			break;
+		case FlowerPotTile::TYPE_ALLIUM:
+			plant = Tile::allium;
 			break;
 		case FlowerPotTile::TYPE_MUSHROOM_BROWN:
 			plant = Tile::mushroom_brown;

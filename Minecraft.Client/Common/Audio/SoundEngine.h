@@ -35,6 +35,9 @@ enum eMUSICFILES
 	eStream_Overworld_Menu2,
 	eStream_Overworld_Menu3,
 	eStream_Overworld_Menu4,
+	//Unused Alpha Tracks
+	eStream_Overworld_Door,
+	eStream_Overworld_Chris,
 #endif
 	eStream_Overworld_piano1,
 	eStream_Overworld_piano2,

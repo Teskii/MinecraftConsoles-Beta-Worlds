@@ -336,6 +336,7 @@ void Tutorial::staticCtor()
 	s_completableTasks.push_back( e_Tutorial_Hint_ClayHardened );
 	s_completableTasks.push_back( e_Tutorial_Hint_ClayHardenedColored );
 	s_completableTasks.push_back( e_Tutorial_Hint_CoalBlock );
+	s_completableTasks.push_back( e_Tutorial_Hint_Diorite );
 
 	s_completableTasks.push_back( e_Tutorial_State_Beacon_Menu );
 	s_completableTasks.push_back( e_Tutorial_State_Fireworks_Menu );
@@ -481,8 +482,8 @@ Tutorial::Tutorial(int iPad, bool isFullTutorial /*= false*/) : m_iPad( iPad )
 	int woolItems[] = {Tile::wool_Id};
 	if(!isHintCompleted(e_Tutorial_Hint_Wool)) addHint(e_Tutorial_State_Gameplay, new LookAtTileHint(e_Tutorial_Hint_Wool, this, woolItems, 1 ) );
 
-	int flowerItems[] = {Tile::flower_Id, Tile::rose_Id};
-	if(!isHintCompleted(e_Tutorial_Hint_Flower)) addHint(e_Tutorial_State_Gameplay, new LookAtTileHint(e_Tutorial_Hint_Flower, this, flowerItems, 2 ) );
+	int flowerItems[] = {Tile::flower_Id, Tile::rose_Id, Tile::allium_Id};
+	if(!isHintCompleted(e_Tutorial_Hint_Flower)) addHint(e_Tutorial_State_Gameplay, new LookAtTileHint(e_Tutorial_Hint_Flower, this, flowerItems, 3 ) );
 
 	int mushroomItems[] = {Tile::mushroom_brown_Id, Tile::mushroom_red_Id};
 	if(!isHintCompleted(e_Tutorial_Hint_Mushroom)) addHint(e_Tutorial_State_Gameplay, new LookAtTileHint(e_Tutorial_Hint_Mushroom, this, mushroomItems, 2 ) );
@@ -796,6 +797,9 @@ Tutorial::Tutorial(int iPad, bool isFullTutorial /*= false*/) : m_iPad( iPad )
 
 	int coalBlockItems[] = {Tile::coalBlock_Id};
 	if(!isHintCompleted(e_Tutorial_Hint_CoalBlock)) addHint(e_Tutorial_State_Gameplay, new LookAtTileHint(e_Tutorial_Hint_CoalBlock, this, coalBlockItems, 1 ) );
+
+	int dioriteItems[] = {Tile::diorite_Id};
+	if(!isHintCompleted(e_Tutorial_Hint_Diorite)) addHint(e_Tutorial_State_Gameplay, new LookAtTileHint(e_Tutorial_Hint_Diorite, this, dioriteItems, 1 ) );
 
 	/*
 	* ENTITY HINTS

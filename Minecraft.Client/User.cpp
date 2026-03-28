@@ -21,6 +21,7 @@ void User::staticCtor()
 	allowedTiles.push_back(Tile::sapling);
 	allowedTiles.push_back(Tile::flower);
 	allowedTiles.push_back(Tile::rose);
+	allowedTiles.push_back(Tile::allium);
 	allowedTiles.push_back(Tile::mushroom_brown);
 	allowedTiles.push_back(Tile::mushroom_red);
 	allowedTiles.push_back(Tile::sand);

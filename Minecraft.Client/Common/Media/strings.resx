@@ -7257,4 +7257,15 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 
 ﻿
 
+  <data name="IDS_TILE_DIORITE">
+    <value>Diorite</value>
+  </data>
+
+  <data name="IDS_TILE_ALLIUM">
+    <value>Allium</value>
+  </data>
+
+  <data name="IDS_DESC_DIORITE">
+    <value>What is this? Oh it's diorite. </value>
+  </data>
 </root>

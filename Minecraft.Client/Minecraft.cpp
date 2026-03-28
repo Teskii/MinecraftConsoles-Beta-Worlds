@@ -2676,6 +2676,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 							case Tile::reeds_Id:
 							case Tile::flower_Id:
 							case Tile::rose_Id:
+							case Tile::allium_Id:
 								*piUse=IDS_TOOLTIPS_PLANT;
 								break;
 
@@ -2857,6 +2858,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 									{
 									case Tile::flower_Id:
 									case Tile::rose_Id:
+									case Tile::allium_Id:
 									case Tile::sapling_Id:
 									case Tile::mushroom_brown_Id:
 									case Tile::mushroom_red_Id:

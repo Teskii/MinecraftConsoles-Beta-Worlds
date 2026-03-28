@@ -313,6 +313,7 @@ enum eTutorial_Hint
 	e_Tutorial_Hint_ClayHardened,
 	e_Tutorial_Hint_ClayHardenedColored,
 	e_Tutorial_Hint_CoalBlock,
+	e_Tutorial_Hint_Diorite,
 
 	e_Tutorial_Hint_Item_Max,
 };
