@@ -2,8 +2,10 @@
 #include "GrassTile.h"
 #include "net.minecraft.world.item.h"
 #include "net.minecraft.world.level.h"
+#include "net.minecraft.world.level.storage.h"
 #include "net.minecraft.world.level.material.h"
 #include "net.minecraft.world.phys.h"
+#include "LevelType.h"
 #include "ReedTile.h"
 
 ReedTile::ReedTile(int id) : Tile( id, Material::plant,isSolidRender() )
@@ -44,11 +46,12 @@ void ReedTile::tick(Level *level, int x, int y, int z, Random* random)
 	}
 }
 
-bool ReedTile::mayPlace(Level *level, int x, int y, int z) 
+bool ReedTile::mayPlace(Level *level, int x, int y, int z)
 {
 	int below = level->getTile(x, y - 1, z);
 	if (below == id) return true;
-	if (below != Tile::grass_Id && below != Tile::dirt_Id && below != Tile::sand_Id) return false;
+	bool allowSand = level->getLevelData()->getGenerator() != LevelType::lvl_beta;
+	if (below != Tile::grass_Id && below != Tile::dirt_Id && (!allowSand || below != Tile::sand_Id)) return false;
 	if (level->getMaterial(x - 1, y - 1, z) == Material::water) return true;
 	if (level->getMaterial(x + 1, y - 1, z) == Material::water) return true;
 	if (level->getMaterial(x, y - 1, z - 1) == Material::water) return true;

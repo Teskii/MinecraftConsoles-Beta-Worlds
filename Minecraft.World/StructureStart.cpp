@@ -44,7 +44,14 @@ void StructureStart::postProcess(Level *level, Random *random, BoundingBox *chun
 
     while( it != pieces.end() )
 	{
-		if( (*it)->getBoundingBox()->intersects(chunkBB) && !(*it)->postProcess(level, random, chunkBB))
+		StructurePiece *piece = *it;
+		if (piece == nullptr || piece->getBoundingBox() == nullptr || chunkBB == nullptr)
+		{
+			it = pieces.erase(it);
+			continue;
+		}
+
+		if(piece->getBoundingBox()->intersects(chunkBB) && !piece->postProcess(level, random, chunkBB))
 		{
 			// this piece can't be placed, so remove it to avoid future
 			// attempts

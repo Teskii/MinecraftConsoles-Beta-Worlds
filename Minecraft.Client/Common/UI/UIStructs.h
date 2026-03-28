@@ -333,6 +333,7 @@ typedef struct _LaunchMoreOptionsMenuInitData
 	bool bGenerateOptions;
 	bool bStructures;
 	bool bFlatWorld;
+	bool bBetaWorld;
 	bool bBonusChest;
 
 	bool bPVP;
@@ -379,6 +380,7 @@ typedef struct _LaunchMoreOptionsMenuInitData
 		bDisableSaving = false;
 		newWorldSize = e_worldSize_Unknown;
 		newWorldSizeOverwriteEdges = false;
+		bBetaWorld = false;
 
 		bMobGriefing = true;
 		bKeepInventory = false;

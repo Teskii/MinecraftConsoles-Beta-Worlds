@@ -21,11 +21,13 @@
 #include "..\Minecraft.World\net.minecraft.world.entity.player.h"
 #include "..\Minecraft.World\net.minecraft.world.item.enchantment.h"
 #include "..\Minecraft.World\net.minecraft.world.level.h"
+#include "..\Minecraft.World\LevelData.h"
 #include "..\Minecraft.World\net.minecraft.world.level.material.h"
 #include "..\Minecraft.World\net.minecraft.world.level.tile.h"
 #include "..\Minecraft.World\net.minecraft.world.level.chunk.h"
 #include "..\Minecraft.World\net.minecraft.world.level.biome.h"
 #include "..\Minecraft.World\net.minecraft.world.level.dimension.h"
+#include "..\Minecraft.World\LevelType.h"
 #include "..\Minecraft.World\net.minecraft.world.phys.h"
 #include "..\Minecraft.World\System.h"
 #include "..\Minecraft.World\FloatBuffer.h"
@@ -1459,8 +1461,8 @@ void GameRenderer::renderLevel(float a, int64_t until)
 		}
 #endif
 
-
-		if (cameraEntity->y < Level::genDepth)
+		bool isBetaWorld = mc->level != nullptr && mc->level->getLevelData()->getGenerator() == LevelType::lvl_beta;
+		if (!isBetaWorld && cameraEntity->y < Level::genDepth)
 		{
 			prepareAndRenderClouds(levelRenderer, a);
 		}
@@ -1597,7 +1599,7 @@ void GameRenderer::renderLevel(float a, int64_t until)
 		levelRenderer->renderDestroyAnimation(Tesselator::getInstance(), dynamic_pointer_cast<Player>(cameraEntity), a);
 		glDisable(GL_BLEND);
 
-		if (cameraEntity->y >= Level::genDepth)
+		if (isBetaWorld || cameraEntity->y >= Level::genDepth)
 		{
 			prepareAndRenderClouds(levelRenderer, a);
 		}

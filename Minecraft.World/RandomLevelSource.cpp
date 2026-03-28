@@ -5,10 +5,15 @@
 #include "net.minecraft.world.level.levelgen.feature.h"
 #include "net.minecraft.world.level.levelgen.structure.h"
 #include "net.minecraft.world.level.levelgen.synth.h"
+#include "net.minecraft.world.level.material.h"
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.level.storage.h"
 #include "net.minecraft.world.entity.h"
 #include "RandomLevelSource.h"
+#include "heightMapGen.h"
+#include "biomeGen.h"
+#include "LevelType.h"
+#include "javaRnd.h"
 
 #ifdef __PS3__
 #include "..\Minecraft.Client\PS3\SPU_Tasks\PerlinNoise\PerlinNoiseJob.h"
@@ -26,6 +31,107 @@ static PerlinNoise_DataIn g_depthNoise_SPU __attribute__((__aligned__(16)));
 const double RandomLevelSource::SNOW_SCALE = 0.3;
 const double RandomLevelSource::SNOW_CUTOFF = 0.5;
 
+namespace
+{
+	static inline int64_t WrapJavaLongMulAddXor(int x, int64_t xScale, int z, int64_t zScale, int64_t worldSeed)
+	{
+		const uint64_t xPart = static_cast<uint64_t>(static_cast<int64_t>(x)) * static_cast<uint64_t>(xScale);
+		const uint64_t zPart = static_cast<uint64_t>(static_cast<int64_t>(z)) * static_cast<uint64_t>(zScale);
+		return static_cast<int64_t>((xPart + zPart) ^ static_cast<uint64_t>(worldSeed));
+	}
+
+	static inline double BetaNoiseLerp(double amount, double start, double end)
+	{
+		return start + amount * (end - start);
+	}
+
+	static inline double BetaNoiseGrad3(int hash, double x, double y, double z)
+	{
+		int h = hash & 15;
+		double u = h < 8 ? x : y;
+		double v = h < 4 ? y : (h != 12 && h != 14 ? z : x);
+		return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
+	}
+
+	static double GetBetaCoordinatePerlinNoise(const PermutationTable &permutationTable, double x, double z)
+	{
+		double sampleX = x + permutationTable.xo;
+		double sampleY = z + permutationTable.yo;
+		double sampleZ = permutationTable.zo;
+
+		int floorX = static_cast<int>(sampleX);
+		int floorY = static_cast<int>(sampleY);
+		int floorZ = static_cast<int>(sampleZ);
+
+		if (sampleX < static_cast<double>(floorX))
+		{
+			--floorX;
+		}
+		if (sampleY < static_cast<double>(floorY))
+		{
+			--floorY;
+		}
+		if (sampleZ < static_cast<double>(floorZ))
+		{
+			--floorZ;
+		}
+
+		int permX = floorX & 255;
+		int permY = floorY & 255;
+		int permZ = floorZ & 255;
+
+		sampleX -= floorX;
+		sampleY -= floorY;
+		sampleZ -= floorZ;
+
+		double fadeX = sampleX * sampleX * sampleX * (sampleX * (sampleX * 6.0 - 15.0) + 10.0);
+		double fadeY = sampleY * sampleY * sampleY * (sampleY * (sampleY * 6.0 - 15.0) + 10.0);
+		double fadeZ = sampleZ * sampleZ * sampleZ * (sampleZ * (sampleZ * 6.0 - 15.0) + 10.0);
+
+		const uint8_t *perm = permutationTable.permutations;
+		int hashXY = perm[permX] + permY;
+		int hashXYZ0 = perm[hashXY] + permZ;
+		int hashXYZ1 = perm[hashXY + 1] + permZ;
+		int hashX1Y = perm[permX + 1] + permY;
+		int hashX1YZ0 = perm[hashX1Y] + permZ;
+		int hashX1YZ1 = perm[hashX1Y + 1] + permZ;
+
+		return BetaNoiseLerp(fadeZ,
+			BetaNoiseLerp(fadeY,
+				BetaNoiseLerp(fadeX,
+					BetaNoiseGrad3(perm[hashXYZ0], sampleX, sampleY, sampleZ),
+					BetaNoiseGrad3(perm[hashX1YZ0], sampleX - 1.0, sampleY, sampleZ)),
+				BetaNoiseLerp(fadeX,
+					BetaNoiseGrad3(perm[hashXYZ1], sampleX, sampleY - 1.0, sampleZ),
+					BetaNoiseGrad3(perm[hashX1YZ1], sampleX - 1.0, sampleY - 1.0, sampleZ))),
+			BetaNoiseLerp(fadeY,
+				BetaNoiseLerp(fadeX,
+					BetaNoiseGrad3(perm[hashXYZ0 + 1], sampleX, sampleY, sampleZ - 1.0),
+					BetaNoiseGrad3(perm[hashX1YZ0 + 1], sampleX - 1.0, sampleY, sampleZ - 1.0)),
+				BetaNoiseLerp(fadeX,
+					BetaNoiseGrad3(perm[hashXYZ1 + 1], sampleX, sampleY - 1.0, sampleZ - 1.0),
+					BetaNoiseGrad3(perm[hashX1YZ1 + 1], sampleX - 1.0, sampleY - 1.0, sampleZ - 1.0))));
+	}
+
+	static void InitBetaForestNoiseOctaves(PermutationTable forestNoise[8], uint64_t worldSeed)
+	{
+		JavaRand worldRandom = get_java_random(worldSeed);
+		PermutationTable skip16[16];
+		PermutationTable skip10[10];
+		PermutationTable skip8[8];
+		PermutationTable skip4[4];
+
+		initOctaves(skip16, &worldRandom, 16);
+		initOctaves(skip16, &worldRandom, 16);
+		initOctaves(skip8, &worldRandom, 8);
+		initOctaves(skip4, &worldRandom, 4);
+		initOctaves(skip4, &worldRandom, 4);
+		initOctaves(skip10, &worldRandom, 10);
+		initOctaves(skip16, &worldRandom, 16);
+		initOctaves(forestNoise, &worldRandom, 8);
+	}
+}
+
 RandomLevelSource::RandomLevelSource(Level *level, int64_t seed, bool generateStructures) : generateStructures( generateStructures )
 {
 	m_XZSize = level->getLevelData()->getXZSize();
@@ -33,8 +139,10 @@ RandomLevelSource::RandomLevelSource(Level *level, int64_t seed, bool generateSt
 	level->getLevelData()->getMoatFlags(&m_classicEdgeMoat, &m_smallEdgeMoat, &m_mediumEdgeMoat);
 #endif
 	caveFeature = new LargeCaveFeature();
+	betaCaveFeature = new BetaLargeCaveFeature();
 	strongholdFeature = new StrongholdFeature();
 	villageFeature = new VillageFeature(m_XZSize);
+	betaOldVillageFeature = new BetaOldVillageFeature(m_XZSize);
 	mineShaftFeature = new MineShaftFeature();
 	scatteredFeature = new RandomScatteredLargeFeature();
 	canyonFeature = new CanyonFeature();
@@ -63,13 +171,16 @@ RandomLevelSource::RandomLevelSource(Level *level, int64_t seed, bool generateSt
 	}
 
 	forestNoise = new PerlinNoise(random, 8);
+	InitBetaForestNoiseOctaves(betaForestNoise, static_cast<uint64_t>(seed));
 }
 
 RandomLevelSource::~RandomLevelSource()
 {
 	delete caveFeature;
+	delete betaCaveFeature;
 	delete strongholdFeature;
 	delete villageFeature;
+	delete betaOldVillageFeature;
 	delete mineShaftFeature;
 	delete scatteredFeature;
 	delete canyonFeature;
@@ -100,6 +211,20 @@ RandomLevelSource::~RandomLevelSource()
 int g_numPrepareHeightCalls = 0;
 LARGE_INTEGER g_totalPrepareHeightsTime = {0,0};
 LARGE_INTEGER g_averagePrepareHeightsTime = {0, 0};
+
+double RandomLevelSource::getBetaTreeCountNoise(double x, double z) const
+{
+	double value = 0.0;
+	double octaveScale = 1.0;
+
+	for (int octave = 0; octave < 8; ++octave)
+	{
+		value += GetBetaCoordinatePerlinNoise(betaForestNoise[octave], x * octaveScale, z * octaveScale) / octaveScale;
+		octaveScale /= 2.0;
+	}
+
+	return value;
+}
 
 
 
@@ -463,8 +588,476 @@ LevelChunk *RandomLevelSource::create(int x, int z)
 	return getChunk(x,z);
 }
 
+static Biomes GetBetaBiomeAtBlock(Level *level, int blockX, int blockZ)
+{
+	const uint64_t seed = static_cast<uint64_t>(level->getSeed());
+	int chunkX = blockX >> 4;
+	int chunkZ = blockZ >> 4;
+
+	BiomeResult *beta = BiomeWrapper(seed, chunkX, chunkZ);
+
+	int localX = blockX & 15;
+	int localZ = blockZ & 15;
+	Biomes result = beta->biomes[localX * 16 + localZ];
+
+	delete_biome_result(beta);
+	return result;
+}
+
+static Biome *MapBetaBiomeToLCE(Biomes betaBiome)
+{
+	switch (betaBiome)
+	{
+	case Rainforest:
+		return Biome::betaRainforest;
+	case Swampland:
+		return Biome::betaSwampland;
+	case Seasonal_forest:
+		return Biome::betaSeasonalForest;
+	case Forest:
+		return Biome::betaForest;
+	case Savanna:
+		return Biome::betaSavanna;
+	case Shrubland:
+		return Biome::betaShrubland;
+	case Taiga:
+		return Biome::betaTaiga;
+	case Desert:
+		return Biome::betaDesert;
+	case Plains:
+		return Biome::betaPlains;
+	case IceDesert:
+		return Biome::betaIceDesert;
+	case Tundra:
+		return Biome::betaTundra;
+	default:
+		return Biome::betaPlains;
+	}
+}
+
+static bool IsBetaGenerator(Level *level)
+{
+	return level->getLevelData()->getGenerator() == LevelType::lvl_beta;
+}
+
+static Feature *CreateBetaTreeFeature(Random *random, Biomes betaBiome)
+{
+	switch (betaBiome)
+	{
+	case Rainforest:
+		return random->nextInt(3) == 0 ? static_cast<Feature *>(new BetaBigTreeFeature(false)) : static_cast<Feature *>(new BetaTreeFeature(false));
+	case Forest:
+		return random->nextInt(5) == 0 ? static_cast<Feature *>(new BetaForestFeature(false)) :
+			(random->nextInt(3) == 0 ? static_cast<Feature *>(new BetaBigTreeFeature(false)) : static_cast<Feature *>(new BetaTreeFeature(false)));
+	case Seasonal_forest:
+		return random->nextInt(10) == 0 ? static_cast<Feature *>(new BetaBigTreeFeature(false)) : static_cast<Feature *>(new BetaTreeFeature(false));
+	case Taiga:
+		return random->nextInt(3) == 0 ? static_cast<Feature *>(new BetaTaiga1Feature(false)) : static_cast<Feature *>(new BetaTaiga2Feature(false));
+	default:
+		return random->nextInt(10) == 0 ? static_cast<Feature *>(new BetaBigTreeFeature(false)) : static_cast<Feature *>(new BetaTreeFeature(false));
+	}
+}
+
+static int GetBetaTreeCount(RandomLevelSource *source, Random *random, Biomes betaBiome, int xo, int zo)
+{
+	int baseTreeCount = static_cast<int>((source->getBetaTreeCountNoise(xo * 0.5, zo * 0.5) / 8.0 + random->nextDouble() * 4.0 + 4.0) / 3.0);
+	int treeCount = 0;
+
+	if (random->nextInt(10) == 0)
+	{
+		++treeCount;
+	}
+
+	switch (betaBiome)
+	{
+	case Forest:
+	case Rainforest:
+	case Taiga:
+		treeCount += baseTreeCount + 5;
+		break;
+	case Seasonal_forest:
+		treeCount += baseTreeCount + 2;
+		break;
+	case Desert:
+	case Tundra:
+	case Plains:
+		treeCount -= 20;
+		break;
+	default:
+		break;
+	}
+
+	return treeCount;
+}
+
+static int GetBetaYellowFlowerCount(Biomes betaBiome)
+{
+	switch (betaBiome)
+	{
+	case Forest:
+		return 2;
+	case Seasonal_forest:
+		return 4;
+	case Taiga:
+		return 2;
+	case Plains:
+		return 3;
+	default:
+		return 0;
+	}
+}
+
+static int GetBetaGrassCount(Biomes betaBiome)
+{
+	switch (betaBiome)
+	{
+	case Forest:
+		return 2;
+	case Rainforest:
+		return 10;
+	case Seasonal_forest:
+		return 2;
+	case Taiga:
+		return 1;
+	case Plains:
+		return 10;
+	default:
+		return 0;
+	}
+}
+
+static int GetBetaDeadBushCount(Biomes betaBiome)
+{
+	return betaBiome == Desert ? 2 : 0;
+}
+
+static int GetBetaCactusCount(Biomes betaBiome)
+{
+	return betaBiome == Desert ? 10 : 0;
+}
+
+static void DecorateBetaOres(Level *level, Random *random, int xo, int zo)
+{
+	BetaClayFeature clayFeature(32);
+	BetaOreFeature dirtOreFeature(Tile::dirt_Id, 32);
+	BetaOreFeature gravelOreFeature(Tile::gravel_Id, 32);
+	BetaOreFeature coalOreFeature(Tile::coalOre_Id, 16);
+	BetaOreFeature ironOreFeature(Tile::ironOre_Id, 8);
+	BetaOreFeature goldOreFeature(Tile::goldOre_Id, 8);
+	BetaOreFeature redStoneOreFeature(Tile::redStoneOre_Id, 7);
+	BetaOreFeature diamondOreFeature(Tile::diamondOre_Id, 7);
+	BetaOreFeature lapisOreFeature(Tile::lapisOre_Id, 6);
+
+	level->setInstaTick(true);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16);
+		clayFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16);
+		dirtOreFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 10; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16);
+		gravelOreFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16);
+		coalOreFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(64);
+		int z = zo + random->nextInt(16);
+		ironOreFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 2; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(32);
+		int z = zo + random->nextInt(16);
+		goldOreFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 8; ++i)
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(16);
+		int z = zo + random->nextInt(16);
+		redStoneOreFeature.place(level, random, x, y, z);
+	}
+
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(16);
+		int z = zo + random->nextInt(16);
+		diamondOreFeature.place(level, random, x, y, z);
+	}
+
+	{
+		int x = xo + random->nextInt(16);
+		int y = random->nextInt(16) + random->nextInt(16);
+		int z = zo + random->nextInt(16);
+		lapisOreFeature.place(level, random, x, y, z);
+	}
+
+	level->setInstaTick(false);
+}
+
+static void PostProcessBeta(RandomLevelSource *source, Level *level, Random *random, int xo, int zo, Biomes betaBiome, bool hasVillage)
+{
+	if (!hasVillage && random->nextInt(4) == 0)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaLakeFeature waterLake(Tile::calmWater_Id);
+		waterLake.place(level, random, x, y, z);
+	}
+
+	if (!hasVillage && random->nextInt(8) == 0)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(random->nextInt(Level::genDepth - 8) + 8);
+		int z = zo + random->nextInt(16) + 8;
+		if (y < 64 || random->nextInt(10) == 0)
+		{
+			BetaLakeFeature lavaLake(Tile::calmLava_Id);
+			lavaLake.place(level, random, x, y, z);
+		}
+	}
+
+	for (int i = 0; i < 8; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaMonsterRoomFeature monsterRoom;
+		monsterRoom.place(level, random, x, y, z);
+	}
+
+	DecorateBetaOres(level, random, xo, zo);
+
+	int treeCount = GetBetaTreeCount(source, random, betaBiome, xo, zo);
+	for (int i = 0; i < treeCount; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int z = zo + random->nextInt(16) + 8;
+		Feature *treeFeature = CreateBetaTreeFeature(random, betaBiome);
+		treeFeature->init(1.0, 1.0, 1.0);
+		int y = level->getHeightmap(x, z);
+		treeFeature->place(level, random, x, y, z);
+		delete treeFeature;
+	}
+
+	BetaFlowerFeature yellowFlowerFeature(Tile::flower_Id);
+	for (int i = 0; i < GetBetaYellowFlowerCount(betaBiome); ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		yellowFlowerFeature.place(level, random, x, y, z);
+	}
+
+	int grassCount = GetBetaGrassCount(betaBiome);
+	for (int i = 0; i < grassCount; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		int grassType = TallGrass::TALL_GRASS;
+		if (betaBiome == Rainforest && random->nextInt(3) != 0)
+		{
+			grassType = TallGrass::FERN;
+		}
+
+		BetaGrassFeature grassFeature(grassType);
+		grassFeature.place(level, random, x, y, z);
+	}
+
+	int deadBushCount = GetBetaDeadBushCount(betaBiome);
+	for (int i = 0; i < deadBushCount; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaDeadBushFeature deadBushFeature(Tile::deadBush_Id);
+		deadBushFeature.place(level, random, x, y, z);
+	}
+
+	if (random->nextInt(2) == 0)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaFlowerFeature roseFlowerFeature(Tile::rose_Id);
+		roseFlowerFeature.place(level, random, x, y, z);
+	}
+
+	if (random->nextInt(4) == 0)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaFlowerFeature brownMushroomFeature(Tile::mushroom_brown_Id);
+		brownMushroomFeature.place(level, random, x, y, z);
+	}
+
+	if (random->nextInt(8) == 0)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaFlowerFeature redMushroomFeature(Tile::mushroom_red_Id);
+		redMushroomFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 10; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaReedsFeature reedsFeature;
+		reedsFeature.place(level, random, x, y, z);
+	}
+
+	if (random->nextInt(32) == 0)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaPumpkinFeature pumpkinFeature;
+		pumpkinFeature.place(level, random, x, y, z);
+	}
+
+	int cactusCount = GetBetaCactusCount(betaBiome);
+	for (int i = 0; i < cactusCount; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(Level::genDepth);
+		int z = zo + random->nextInt(16) + 8;
+		BetaCactusFeature cactusFeature;
+		cactusFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 50; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(random->nextInt(Level::genDepth - 8) + 8);
+		int z = zo + random->nextInt(16) + 8;
+		BetaSpringFeature waterSpringFeature(Tile::water_Id);
+		waterSpringFeature.place(level, random, x, y, z);
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		int x = xo + random->nextInt(16) + 8;
+		int y = random->nextInt(random->nextInt(random->nextInt(Level::genDepth - 16) + 8) + 8);
+		int z = zo + random->nextInt(16) + 8;
+		BetaSpringFeature lavaSpringFeature(Tile::lava_Id);
+		lavaSpringFeature.place(level, random, x, y, z);
+	}
+}
+
+static int MapBetaBlockToLCE(uint8_t b)
+{
+	switch (b)
+	{
+	case AIR:          return 0;
+	case STONE:        return Tile::stone_Id;
+	case GRASS:        return Tile::grass_Id;
+	case DIRT:         return Tile::dirt_Id;
+	case BEDROCK:      return Tile::unbreakable_Id;
+	case MOVING_WATER: return Tile::calmWater_Id;
+	case SAND:         return Tile::sand_Id;
+	case SANDSTONE:    return Tile::sandStone_Id;
+	case GRAVEL:       return Tile::gravel_Id;
+	case ICE:          return Tile::ice_Id;
+	default:           return 0;
+	}
+}
+
 LevelChunk *RandomLevelSource::getChunk(int xOffs, int zOffs)
 {
+	if (IsBetaGenerator(level))
+	{
+		const uint64_t seed = static_cast<uint64_t>(level->getSeed());
+		FiniteWorldBorderConfig borderConfig;
+		borderConfig.worldSize = m_XZSize * 16;
+		borderConfig.seaLevel = Level::genDepth / 2;
+#ifdef _LARGE_WORLDS
+		borderConfig.classicEdgeMoat = m_classicEdgeMoat;
+		borderConfig.smallEdgeMoat = m_smallEdgeMoat;
+		borderConfig.mediumEdgeMoat = m_mediumEdgeMoat;
+#else
+		borderConfig.classicEdgeMoat = false;
+		borderConfig.smallEdgeMoat = false;
+		borderConfig.mediumEdgeMoat = false;
+#endif
+
+		BiomeResult *betaBiomes = BiomeWrapper(seed, xOffs, zOffs);
+		uint8_t *betaChunk = TerrainInternalWrapper(seed, xOffs, zOffs, betaBiomes, &borderConfig);
+
+		int blocksSize = Level::genDepth * 16 * 16;
+		byte *tileData = static_cast<byte *>(XPhysicalAlloc(blocksSize, MAXULONG_PTR, 4096, PAGE_READWRITE));
+		XMemSet128(tileData, 0, blocksSize);
+		byteArray blocks(tileData, blocksSize);
+
+		for (int x = 0; x < 16; ++x)
+		{
+			for (int z = 0; z < 16; ++z)
+			{
+				for (int y = 0; y < 128 && y < Level::genDepth; ++y)
+				{
+					int betaIndex = 128 * x * 16 + 128 * z + y;
+					int dstIndex = (x << Level::genDepthBitsPlusFour) | (z << Level::genDepthBits) | y;
+					blocks[dstIndex] = static_cast<byte>(MapBetaBlockToLCE(betaChunk[betaIndex]));
+				}
+			}
+		}
+
+		if (generateStructures)
+		{
+			betaCaveFeature->apply(this, level, xOffs, zOffs, blocks);
+			betaOldVillageFeature->apply(this, level, xOffs, zOffs, blocks);
+			strongholdFeature->apply(this, level, xOffs, zOffs, blocks);
+		}
+
+		LevelChunk *levelChunk = new LevelChunk(level, blocks, xOffs, zOffs);
+		byteArray chunkBiomes = levelChunk->getBiomes();
+		for (int x = 0; x < 16; ++x)
+		{
+			for (int z = 0; z < 16; ++z)
+			{
+				chunkBiomes[(z << 4) | x] = static_cast<byte>(MapBetaBiomeToLCE(betaBiomes->biomes[x * 16 + z])->id & 0xff);
+			}
+		}
+
+		XPhysicalFree(tileData);
+		delete[] betaChunk;
+		delete_biome_result(betaBiomes);
+		return levelChunk;
+	}
+
 	random->setSeed(xOffs * 341873128712l + zOffs * 132897987541l);
 
 	// 4J - now allocating this with a physical alloc & bypassing general memory management so that it will get cleanly freed
@@ -757,8 +1350,17 @@ void RandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 	HeavyTile::instaFall = true;
 	int xo = xt * 16;
 	int zo = zt * 16;
-
-	Biome *biome = level->getBiome(xo + 16, zo + 16);
+	Biomes betaBiome = Plains;
+	Biome *biome = nullptr;
+	if (IsBetaGenerator(level))
+	{
+		betaBiome = GetBetaBiomeAtBlock(level, xo + 16, zo + 16);
+		biome = MapBetaBiomeToLCE(betaBiome);
+	}
+	else
+	{
+		biome = level->getBiome(xo + 16, zo + 16);
+	}
 
 	if (FLOATING_ISLANDS)
 	{
@@ -768,63 +1370,84 @@ void RandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 	pprandom->setSeed(level->getSeed());
 	int64_t xScale = pprandom->nextLong() / 2 * 2 + 1;
 	int64_t zScale = pprandom->nextLong() / 2 * 2 + 1;
-	pprandom->setSeed(((xt * xScale) + (zt * zScale)) ^ level->getSeed());
+	const int64_t populateSeed = WrapJavaLongMulAddXor(xt, xScale, zt, zScale, level->getSeed());
+	pprandom->setSeed(populateSeed);
 
 	bool hasVillage = false;
 
 	PIXBeginNamedEvent(0,"Structure postprocessing");
 	if (generateStructures)
 	{
-		mineShaftFeature->postProcess(level, pprandom, xt, zt);
-		hasVillage = villageFeature->postProcess(level, pprandom, xt, zt);
-		strongholdFeature->postProcess(level, pprandom, xt, zt);
-		scatteredFeature->postProcess(level, random, xt, zt);
+		if (IsBetaGenerator(level))
+		{
+			hasVillage = betaOldVillageFeature->postProcess(level, pprandom, xt, zt);
+			Random strongholdRandom;
+			strongholdRandom.setSeed(populateSeed);
+			strongholdFeature->postProcess(level, &strongholdRandom, xt, zt);
+		}
+		else
+		{
+			mineShaftFeature->postProcess(level, pprandom, xt, zt);
+			hasVillage = villageFeature->postProcess(level, pprandom, xt, zt);
+			strongholdFeature->postProcess(level, pprandom, xt, zt);
+			scatteredFeature->postProcess(level, random, xt, zt);
+		}
 	}
 	PIXEndNamedEvent();
 
 	PIXBeginNamedEvent(0,"Lakes");
-	if (biome != Biome::desert && biome != Biome::desertHills)
+	if (IsBetaGenerator(level))
 	{
-		if (!hasVillage && pprandom->nextInt(4) == 0)
+		PIXEndNamedEvent();
+		PIXBeginNamedEvent(0,"Beta populate");
+		PostProcessBeta(this, level, pprandom, xo, zo, betaBiome, hasVillage);
+		PIXEndNamedEvent();
+	}
+	else
+	{
+		if (biome != Biome::desert && biome != Biome::desertHills)
+		{
+			if (!hasVillage && pprandom->nextInt(4) == 0)
+			{
+				int x = xo + pprandom->nextInt(16) + 8;
+				int y = pprandom->nextInt(Level::genDepth);
+				int z = zo + pprandom->nextInt(16) + 8;
+
+				LakeFeature calmWater(Tile::calmWater_Id);
+				calmWater.place(level, pprandom, x, y, z);
+			}
+		}
+		PIXEndNamedEvent();
+
+		PIXBeginNamedEvent(0,"Lava");
+		if (!hasVillage && pprandom->nextInt(8) == 0)
+		{
+			int x = xo + pprandom->nextInt(16) + 8;
+			int y = pprandom->nextInt(pprandom->nextInt(Level::genDepth - 8) + 8);
+			int z = zo + pprandom->nextInt(16) + 8;
+			if (y < level->seaLevel || pprandom->nextInt(10) == 0)
+			{
+				LakeFeature calmLava(Tile::calmLava_Id);
+				calmLava.place(level, pprandom, x, y, z);
+			}
+		}
+		PIXEndNamedEvent();
+
+		PIXBeginNamedEvent(0,"Monster rooms");
+		for (int i = 0; i < 8; i++)
 		{
 			int x = xo + pprandom->nextInt(16) + 8;
 			int y = pprandom->nextInt(Level::genDepth);
 			int z = zo + pprandom->nextInt(16) + 8;
-
-			LakeFeature calmWater(Tile::calmWater_Id);
-			calmWater.place(level, pprandom, x, y, z);
+			MonsterRoomFeature mrf;
+			mrf.place(level, pprandom, x, y, z);
 		}
-	}
-	PIXEndNamedEvent();
+		PIXEndNamedEvent();
 
-	PIXBeginNamedEvent(0,"Lava");
-	if (!hasVillage && pprandom->nextInt(8) == 0)
-	{
-		int x = xo + pprandom->nextInt(16) + 8;
-		int y = pprandom->nextInt(pprandom->nextInt(Level::genDepth - 8) + 8);
-		int z = zo + pprandom->nextInt(16) + 8;
-		if (y < level->seaLevel || pprandom->nextInt(10) == 0)
-		{
-			LakeFeature calmLava(Tile::calmLava_Id);
-			calmLava.place(level, pprandom, x, y, z);
-		}
+		PIXBeginNamedEvent(0,"Biome decorate");
+		biome->decorate(level, pprandom, xo, zo);
+		PIXEndNamedEvent();
 	}
-	PIXEndNamedEvent();
-
-	PIXBeginNamedEvent(0,"Monster rooms");
-	for (int i = 0; i < 8; i++)
-	{
-		int x = xo + pprandom->nextInt(16) + 8;
-		int y = pprandom->nextInt(Level::genDepth);
-		int z = zo + pprandom->nextInt(16) + 8;
-		MonsterRoomFeature mrf;
-		mrf.place(level, pprandom, x, y, z);
-	}
-	PIXEndNamedEvent();
-
-	PIXBeginNamedEvent(0,"Biome decorate");
-	biome->decorate(level, pprandom, xo, zo);
-	PIXEndNamedEvent();
 
 	PIXBeginNamedEvent(0,"Process Schematics");
 	app.processSchematics(parent->getChunk(xt,zt));
@@ -835,22 +1458,55 @@ void RandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 	PIXEndNamedEvent();
 
 	PIXBeginNamedEvent(0,"Update ice and snow");
-	// 4J - brought forward from 1.2.3 to get snow back in taiga biomes
-	xo += 8;
-	zo += 8;
-	for (int x = 0; x < 16; x++)
+	if (IsBetaGenerator(level))
 	{
-		for (int z = 0; z < 16; z++)
+		xo += 8;
+		zo += 8;
+		doubleArray snowNoise = CreateBetaTemperatureNoise(static_cast<uint64_t>(level->getSeed()), xo, zo, 16, 16);
+		for (int x = 0; x < 16; ++x)
 		{
-			int y = level->getTopRainBlock(xo + x, zo + z);
+			for (int z = 0; z < 16; ++z)
+			{
+				int worldX = xo + x;
+				int worldZ = zo + z;
+				int y = level->getTopRainBlock(worldX, worldZ);
+				double snow = snowNoise[x * 16 + z] - static_cast<double>(y - 64) / 64.0 * SNOW_SCALE;
+				int belowTile = level->getTile(worldX, y - 1, worldZ);
+				Material *belowMaterial = level->getMaterial(worldX, y - 1, worldZ);
 
-			if (level->shouldFreezeIgnoreNeighbors(x + xo, y - 1, z + zo))
-			{
-				level->setTileAndData(x + xo, y - 1, z + zo, Tile::ice_Id, 0, Tile::UPDATE_CLIENTS);
+				if (snow < SNOW_CUTOFF &&
+					y > 0 &&
+					y < Level::maxBuildHeight &&
+					level->isEmptyTile(worldX, y, worldZ) &&
+					belowMaterial != nullptr &&
+					belowMaterial->isSolid() &&
+					belowTile != Tile::ice_Id)
+				{
+					level->setTileAndData(worldX, y, worldZ, Tile::topSnow_Id, 0, Tile::UPDATE_CLIENTS);
+				}
 			}
-			if (level->shouldSnow(x + xo, y, z + zo))
+		}
+		if (snowNoise.data != nullptr) delete [] snowNoise.data;
+	}
+	else
+	{
+		// 4J - brought forward from 1.2.3 to get snow back in taiga biomes
+		xo += 8;
+		zo += 8;
+		for (int x = 0; x < 16; x++)
+		{
+			for (int z = 0; z < 16; z++)
 			{
-				level->setTileAndData(x + xo, y, z + zo, Tile::topSnow_Id, 0, Tile::UPDATE_CLIENTS);
+				int y = level->getTopRainBlock(xo + x, zo + z);
+
+				if (level->shouldFreezeIgnoreNeighbors(x + xo, y - 1, z + zo))
+				{
+					level->setTileAndData(x + xo, y - 1, z + zo, Tile::ice_Id, 0, Tile::UPDATE_CLIENTS);
+				}
+				if (level->shouldSnow(x + xo, y, z + zo))
+				{
+					level->setTileAndData(x + xo, y, z + zo, Tile::topSnow_Id, 0, Tile::UPDATE_CLIENTS);
+				}
 			}
 		}
 	}
@@ -881,7 +1537,16 @@ wstring RandomLevelSource::gatherStats()
 
 vector<Biome::MobSpawnerData *> *RandomLevelSource::getMobsAt(MobCategory *mobCategory, int x, int y, int z)
 {
-	Biome *biome = level->getBiome(x, z);
+	Biome *biome = nullptr;
+	if (IsBetaGenerator(level))
+	{
+		Biomes betaBiome = GetBetaBiomeAtBlock(level, x, z);
+		biome = MapBetaBiomeToLCE(betaBiome);
+	}
+	else
+	{
+		biome = level->getBiome(x, z);
+	}
 	if (biome == nullptr)
 	{
 		return nullptr;
@@ -906,9 +1571,17 @@ void RandomLevelSource::recreateLogicStructuresForChunk(int chunkX, int chunkZ)
 {
 	if (generateStructures)
 	{
-		mineShaftFeature->apply(this, level, chunkX, chunkZ, byteArray());
-		villageFeature->apply(this, level, chunkX, chunkZ, byteArray());
-		strongholdFeature->apply(this, level, chunkX, chunkZ, byteArray());
-		scatteredFeature->apply(this, level, chunkX, chunkZ, byteArray());
+		if (IsBetaGenerator(level))
+		{
+			betaOldVillageFeature->apply(this, level, chunkX, chunkZ, byteArray());
+			strongholdFeature->apply(this, level, chunkX, chunkZ, byteArray());
+		}
+		else
+		{
+			mineShaftFeature->apply(this, level, chunkX, chunkZ, byteArray());
+			villageFeature->apply(this, level, chunkX, chunkZ, byteArray());
+			strongholdFeature->apply(this, level, chunkX, chunkZ, byteArray());
+			scatteredFeature->apply(this, level, chunkX, chunkZ, byteArray());
+		}
 	}
 }

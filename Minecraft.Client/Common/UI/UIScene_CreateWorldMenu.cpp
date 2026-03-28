@@ -64,6 +64,7 @@ UIScene_CreateWorldMenu::UIScene_CreateWorldMenu(int iPad, void *initData, UILay
 	m_MoreOptionsParams.bGenerateOptions=TRUE;
 	m_MoreOptionsParams.bStructures=TRUE;
 	m_MoreOptionsParams.bFlatWorld=FALSE;
+	m_MoreOptionsParams.bBetaWorld=FALSE;
 	m_MoreOptionsParams.bBonusChest=FALSE;
 	m_MoreOptionsParams.bPVP = TRUE;
 	m_MoreOptionsParams.bTrust = TRUE;
@@ -1186,7 +1187,21 @@ void UIScene_CreateWorldMenu::CreateGame(UIScene_CreateWorldMenu* pClass, DWORD 
 	app.SetGameHostOption(eGameHostOption_BedrockFog,app.GetGameSettings(pClass->m_iPad,eGameSetting_BedrockFog)?1:0);
 
 	app.SetGameHostOption(eGameHostOption_GameType,pClass->m_iGameModeId );
-	app.SetGameHostOption(eGameHostOption_LevelType,pClass->m_MoreOptionsParams.bFlatWorld );
+	int levelType = 0;
+	int beta = 0;
+	if (pClass->m_MoreOptionsParams.bBetaWorld)
+		beta = 1;
+	else if (pClass->m_MoreOptionsParams.bFlatWorld)
+		levelType = 1;
+	app.SetGameHostOption(eGameHostOption_LevelType, levelType);
+	app.SetGameHostOption(eGameHostOption_Beta, beta);
+	if (app.getLevelGenerationOptions() != nullptr)
+	{
+		bool useBetaWorld = (pClass->m_MoreOptionsParams.bBetaWorld == TRUE);
+		bool useFlatWorld = (pClass->m_MoreOptionsParams.bFlatWorld == TRUE) && !useBetaWorld;
+		app.getLevelGenerationOptions()->setuseFlatWorld(useFlatWorld);
+		app.getLevelGenerationOptions()->setuseBetaWorld(useBetaWorld);
+	}
 	app.SetGameHostOption(eGameHostOption_Structures,pClass->m_MoreOptionsParams.bStructures );
 	app.SetGameHostOption(eGameHostOption_BonusChest,pClass->m_MoreOptionsParams.bBonusChest );
 

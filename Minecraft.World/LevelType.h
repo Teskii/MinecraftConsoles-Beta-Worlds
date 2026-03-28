@@ -10,6 +10,7 @@ public:
 	static LevelType *lvl_flat;// = new LevelType(1, "flat");
 	static LevelType *lvl_largeBiomes;// = new LevelType(2, "largeBiomes");
 	static LevelType *lvl_normal_1_1;// = new LevelType(8, "default_1_1", 0).setSelectableByUser(false);
+	static LevelType *lvl_beta;
 
 	static void staticCtor();
 

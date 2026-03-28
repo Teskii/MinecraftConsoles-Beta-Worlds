@@ -19,6 +19,8 @@
 #include "ResourceLocation.h"
 #include "..\Minecraft.World\ItemEntity.h"
 #include "TextureAtlas.h"
+#include "..\Minecraft.World\GrassColor.h"
+#include "..\Minecraft.World\FoliageColor.h"
 
 bool Textures::MIPMAP = true;
 C4JRender::eTextureFormat Textures::TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_RxGyBzAw;
@@ -1307,8 +1309,8 @@ void Textures::reloadAll()
 	pixelsMap.clear();
 	// 4J Stu - These are not used any more
 	//WaterColor::init(loadTexturePixels(L"misc/watercolor.png"));
-	//GrassColor::init(loadTexturePixels(L"misc/grasscolor.png"));
-	//FoliageColor::init(loadTexturePixels(L"misc/foliagecolor.png"));
+	GrassColor::init(loadTexturePixels((TEXTURE_NAME)TN_COUNT, L"misc/grasscolor.png"));
+	FoliageColor::init(loadTexturePixels((TEXTURE_NAME)TN_COUNT, L"misc/foliagecolor.png"));
 
 	stitch();
 

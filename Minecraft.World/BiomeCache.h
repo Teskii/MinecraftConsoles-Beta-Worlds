@@ -16,10 +16,8 @@ public:
 	class Block
 	{
 	public:
-		// MGH - changed this to just cache biome indices, as we have direct access to the data if we know the index.
-// 		floatArray temps;
-// 		floatArray downfall;
-// 		BiomeArray biomes;
+		floatArray temps;
+		floatArray downfall;
 		byteArray biomeIndices;
 		int x, z;
 		int64_t lastUse;

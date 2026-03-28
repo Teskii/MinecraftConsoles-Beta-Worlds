@@ -92,6 +92,7 @@ UIScene_LaunchMoreOptionsMenu::UIScene_LaunchMoreOptionsMenu(int iPad, void *ini
 	m_checkboxes[eLaunchCheckbox_ResetNether].init(app.GetString(IDS_RESET_NETHER),eLaunchCheckbox_ResetNether,m_params->bResetNether);
 	m_checkboxes[eLaunchCheckbox_Structures].init(app.GetString(IDS_GENERATE_STRUCTURES),eLaunchCheckbox_Structures,m_params->bStructures);
 	m_checkboxes[eLaunchCheckbox_FlatWorld].init(app.GetString(IDS_SUPERFLAT_WORLD),eLaunchCheckbox_FlatWorld,m_params->bFlatWorld);
+	m_checkboxes[eLaunchCheckbox_BetaWorld].init(L"Beta World",eLaunchCheckbox_BetaWorld,m_params->bBetaWorld);
 	m_checkboxes[eLaunchCheckbox_BonusChest].init(app.GetString(IDS_BONUS_CHEST),eLaunchCheckbox_BonusChest,m_params->bBonusChest);
 
 	m_checkboxes[eLaunchCheckbox_KeepInventory].init(app.GetString(IDS_KEEP_INVENTORY), eLaunchCheckbox_KeepInventory, m_params->bKeepInventory);
@@ -390,6 +391,19 @@ void UIScene_LaunchMoreOptionsMenu::handleCheckboxToggled(F64 controlId, bool se
 		break;
 	case eLaunchCheckbox_FlatWorld:
 		m_params->bFlatWorld = selected;
+		if (selected)
+		{
+			m_params->bBetaWorld = false;
+			m_checkboxes[eLaunchCheckbox_BetaWorld].setChecked(false);
+		}
+		break;
+	case eLaunchCheckbox_BetaWorld:
+		m_params->bBetaWorld = selected;
+		if (selected)
+		{
+			m_params->bFlatWorld = false;
+			m_checkboxes[eLaunchCheckbox_FlatWorld].setChecked(false);
+		}
 		break;
 	case eLaunchCheckbox_BonusChest:
 		m_params->bBonusChest = selected;
@@ -410,6 +424,7 @@ void UIScene_LaunchMoreOptionsMenu::handleCheckboxToggled(F64 controlId, bool se
 		break;
 	case eLaunchCheckbox_MobLoot:
 		m_params->bDoMobLoot = selected;
+		break;
 	case eLaunchCheckbox_MobGriefing:
 		m_params->bMobGriefing = selected;
 		break;
@@ -424,6 +439,8 @@ void UIScene_LaunchMoreOptionsMenu::handleCheckboxToggled(F64 controlId, bool se
 		break;
 	};
 }
+
+wstring betaDesc = L"When enabled, the Overworld will be generated using the Beta world generation and biome layout.";
 
 void UIScene_LaunchMoreOptionsMenu::handleFocusChange(F64 controlId, F64 childId)
 {
@@ -463,6 +480,17 @@ void UIScene_LaunchMoreOptionsMenu::handleFocusChange(F64 controlId, F64 childId
 	case eLaunchCheckbox_FlatWorld:
 		stringId = IDS_GAMEOPTION_SUPERFLAT;
 		break;
+	case eLaunchCheckbox_BetaWorld:
+		{
+			wchar_t startTags[64];
+			swprintf(startTags,64,L"<font color=\"#%08x\">",app.GetHTMLColour(eHTMLColor_White));
+			wstring betaText = startTags + betaDesc;
+			if (m_tabIndex == TAB_WORLD_OPTIONS)
+				m_labelDescription_WorldOptions.setLabel(betaText);
+			else
+				m_labelDescription_GameOptions.setLabel(betaText);
+			return;
+		}
 	case eLaunchCheckbox_BonusChest:
 		stringId = IDS_GAMEOPTION_BONUS_CHEST;
 		break;

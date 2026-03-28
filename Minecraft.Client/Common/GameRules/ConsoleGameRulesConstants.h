@@ -60,6 +60,7 @@ public:
 
 		eGameRuleAttr_seed,
 		eGameRuleAttr_flatworld,
+		eGameRuleAttr_betaworld,
 
 		eGameRuleAttr_filename,
 		eGameRuleAttr_rot,

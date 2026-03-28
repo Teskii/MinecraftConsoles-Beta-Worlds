@@ -62,9 +62,10 @@ bool StructureFeature::postProcess(Level *level, Random *random, int chunkX, int
 	{
 		StructureStart *structureStart = it.second;
 
-		if (structureStart->isValid())
+		if (structureStart != nullptr && structureStart->isValid())
 		{
-			if (structureStart->getBoundingBox()->intersects(cx, cz, cx + 15, cz + 15))
+			BoundingBox *structureBox = structureStart->getBoundingBox();
+			if (structureBox != nullptr && structureBox->intersects(cx, cz, cx + 15, cz + 15))
 			{
 				BoundingBox *bb = new BoundingBox(cx, cz, cx + 15, cz + 15);
 				structureStart->postProcess(level, random, bb);
@@ -87,15 +88,16 @@ bool StructureFeature::isIntersection(int cellX, int cellZ)
 	for(auto & it : cachedStructures)
 	{
 		StructureStart *structureStart = it.second;
-		if (structureStart->isValid())
+		if (structureStart != nullptr && structureStart->isValid())
 		{
-			if (structureStart->getBoundingBox()->intersects(cellX, cellZ, cellX, cellZ))
+			BoundingBox *structureBox = structureStart->getBoundingBox();
+			if (structureBox != nullptr && structureBox->intersects(cellX, cellZ, cellX, cellZ))
 			{
                 auto it2 = structureStart->getPieces()->begin();
                 while( it2 != structureStart->getPieces()->end() )
 				{
 					StructurePiece *next = *it2++;
-					if (next->getBoundingBox()->intersects(cellX, cellZ, cellX, cellZ))
+					if (next != nullptr && next->getBoundingBox() != nullptr && next->getBoundingBox()->intersects(cellX, cellZ, cellX, cellZ))
 					{
 						return true;
 					}
@@ -118,9 +120,10 @@ StructureStart *StructureFeature::getStructureAt(int cellX, int cellY, int cellZ
 	{
 		StructureStart *pStructureStart = it.second;
 
-		if (pStructureStart->isValid())
+		if (pStructureStart != nullptr && pStructureStart->isValid())
 		{
-			if (pStructureStart->getBoundingBox()->intersects(cellX, cellZ, cellX, cellZ))
+			BoundingBox *structureBox = pStructureStart->getBoundingBox();
+			if (structureBox != nullptr && structureBox->intersects(cellX, cellZ, cellX, cellZ))
 			{
 				/*
 				Iterator<StructurePiece> it = structureStart.getPieces().iterator();
@@ -134,7 +137,7 @@ StructureStart *StructureFeature::getStructureAt(int cellX, int cellY, int cellZ
 
 				for (auto& piece : *pieces)
 				{
-					if ( piece->getBoundingBox()->isInside(cellX, cellY, cellZ)  )
+					if (piece != nullptr && piece->getBoundingBox() != nullptr && piece->getBoundingBox()->isInside(cellX, cellY, cellZ))
 					{
 						return pStructureStart;
 					}
@@ -152,9 +155,10 @@ bool StructureFeature::isInsideBoundingFeature(int cellX, int cellY, int cellZ)
 	for(auto& it : cachedStructures)
 	{
 		StructureStart *structureStart = it.second;
-		if (structureStart->isValid())
+		if (structureStart != nullptr && structureStart->isValid())
 		{
-			return (structureStart->getBoundingBox()->intersects(cellX, cellZ, cellX, cellZ));
+			BoundingBox *structureBox = structureStart->getBoundingBox();
+			return structureBox != nullptr && structureBox->intersects(cellX, cellZ, cellX, cellZ);
 		}
 	}
 	return false;
@@ -184,11 +188,18 @@ TilePos *StructureFeature::getNearestGeneratedFeature(Level *level, int cellX, i
 	{
 		StructureStart *pStructureStart = it.second;
 
-		if (pStructureStart->isValid())
+		if (pStructureStart != nullptr && pStructureStart->isValid())
 		{
+			if (pStructureStart->getPieces()->empty())
+			{
+				continue;
+			}
 
-			//StructurePiece *pStructurePiece = pStructureStart->getPieces().get(0);
-			StructurePiece* pStructurePiece = * pStructureStart->getPieces()->begin();
+			StructurePiece* pStructurePiece = *pStructureStart->getPieces()->begin();
+			if (pStructurePiece == nullptr || pStructurePiece->getBoundingBox() == nullptr)
+			{
+				continue;
+			}
 			TilePos *locatorPosition = pStructurePiece->getLocatorPosition();
 
 			int dx = locatorPosition->x - cellX;

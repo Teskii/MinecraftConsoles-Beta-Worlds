@@ -52,6 +52,7 @@ LevelGenerationOptions::LevelGenerationOptions(DLCPack *parentPack)
 	m_seed = 0;
 	m_bHasBeenInCreative = true;
 	m_useFlatWorld = false;
+	m_useBetaWorld = false;
 	m_bHaveMinY = false;
 	m_minY = INT_MAX;
 	m_bRequiresGameRules = false;
@@ -111,6 +112,8 @@ void LevelGenerationOptions::writeAttributes(DataOutputStream *dos, UINT numAttr
 	dos->writeUTF(std::to_wstring(m_seed));
 	ConsoleGameRules::write(dos, ConsoleGameRules::eGameRuleAttr_flatworld);
 	dos->writeUTF(std::to_wstring(m_useFlatWorld));
+	ConsoleGameRules::write(dos, ConsoleGameRules::eGameRuleAttr_betaworld);
+	dos->writeUTF(std::to_wstring(m_useBetaWorld));
 }
 
 void LevelGenerationOptions::getChildren(vector<GameRuleDefinition *> *children)
@@ -203,6 +206,11 @@ void LevelGenerationOptions::addAttribute(const wstring &attributeName, const ws
 	{
 		if(attributeValue.compare(L"true") == 0) m_useFlatWorld = true;
 		app.DebugPrintf("LevelGenerationOptions: Adding parameter flatworld=%s\n",m_useFlatWorld?"TRUE":"FALSE");
+	}
+	else if(attributeName.compare(L"betaworld") == 0)
+	{
+		if(attributeValue.compare(L"true") == 0) m_useBetaWorld = true;
+		app.DebugPrintf("LevelGenerationOptions: Adding parameter betaworld=%s\n", m_useBetaWorld ? "TRUE" : "FALSE");
 	}
 	else if(attributeName.compare(L"saveName") == 0)
 	{
@@ -773,6 +781,9 @@ int64_t LevelGenerationOptions::getLevelSeed() { return m_seed; }
 int LevelGenerationOptions::getLevelHasBeenInCreative() { return m_bHasBeenInCreative; }
 Pos *LevelGenerationOptions::getSpawnPos() { return m_spawnPos; }
 bool LevelGenerationOptions::getuseFlatWorld() { return m_useFlatWorld; }
+bool LevelGenerationOptions::getuseBetaWorld() { return m_useBetaWorld; }
+void LevelGenerationOptions::setuseFlatWorld(bool value) { m_useFlatWorld = value; }
+void LevelGenerationOptions::setuseBetaWorld(bool value) { m_useBetaWorld = value; }
 
 bool LevelGenerationOptions::requiresGameRules() { return m_bRequiresGameRules; }
 void LevelGenerationOptions::setRequiredGameRules(LevelRuleset *rules) { m_requiredGameRules = rules; m_bRequiresGameRules = true; }

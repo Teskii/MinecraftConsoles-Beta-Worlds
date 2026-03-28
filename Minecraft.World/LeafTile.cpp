@@ -77,7 +77,7 @@ int LeafTile::getColor(LevelSource *level, int x, int y, int z, int data)
 	{
 		for (int ox = -1; ox <= 1; ox++)
 		{
-			int foliageColor = level->getBiome(x + ox, z + oz)->getFolageColor();
+			int foliageColor = level->getBiome(x + ox, z + oz)->getFolageColor(level, x + ox, y, z + oz);
 
 			totalRed += (foliageColor & 0xff0000) >> 16;
 			totalGreen += (foliageColor & 0xff00) >> 8;

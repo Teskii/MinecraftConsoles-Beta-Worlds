@@ -2066,6 +2066,57 @@ set(_MINECRAFT_WORLD_COMMON_X64HEADERS
 )
 source_group("x64headers" FILES ${_MINECRAFT_WORLD_COMMON_X64HEADERS})
 
+set(_MINECRAFT_WORLD_COMMON_BETA_WORLDGEN
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaBigTreeFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaBigTreeFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaBiomeSource.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaBiomeSource.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaCactusFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaCactusFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaClayFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaClayFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaDeadBushFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaDeadBushFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaFlowerFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaFlowerFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaForestFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaForestFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaGrassFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaGrassFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaLakeFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaLakeFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaLargeCaveFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaLargeCaveFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaLegacyPlacement.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaMonsterRoomFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaMonsterRoomFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaOldVillageFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaOldVillageFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaOreFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaOreFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaPumpkinFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaPumpkinFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaReedsFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaReedsFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaSpringFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaSpringFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTaiga1Feature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTaiga1Feature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTaiga2Feature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTaiga2Feature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTreeFeature.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTreeFeature.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaTreeSupport.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BetaVegetationSupport.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/biomeGen.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/biomeGen.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/heightMapGen.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/heightMapGen.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/javaRnd.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/perlinCommon.h"
+)
+source_group("Beta Worldgen" FILES ${_MINECRAFT_WORLD_COMMON_BETA_WORLDGEN})
+
 set(MINECRAFT_WORLD_COMMON
   ${_MINECRAFT_WORLD_COMMON_ROOT}
   ${_MINECRAFT_WORLD_COMMON_CONSOLEHELPERS}
@@ -2138,4 +2189,5 @@ set(MINECRAFT_WORLD_COMMON
   ${_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_SCORES}
   ${_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_SCORES_CRITERIA}
   ${_MINECRAFT_WORLD_COMMON_X64HEADERS}
+  ${_MINECRAFT_WORLD_COMMON_BETA_WORLDGEN}
 )

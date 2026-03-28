@@ -10,6 +10,19 @@
 #include "..\Minecraft.World\Tile.h"
 #include "..\Minecraft.World\WaterLevelChunk.h"
 
+namespace
+{
+	static int GetFakeInfiniteSeaLevel(Level *level)
+	{
+		if (level->getLevelData()->getGenerator() == LevelType::lvl_beta)
+		{
+			return Level::genDepth / 2;
+		}
+
+		return level->getSeaLevel();
+	}
+}
+
 MultiPlayerChunkCache::MultiPlayerChunkCache(Level *level)
 {
 	XZSIZE = level->dimension->getXZSize(); // 4J Added
@@ -41,13 +54,14 @@ MultiPlayerChunkCache::MultiPlayerChunkCache(Level *level)
 		}
 		else
 		{
+			const int fakeSeaLevel = GetFakeInfiniteSeaLevel(level);
 			for( int x = 0; x < 16; x++ )
 				for( int y = 0; y < 128; y++ )
 					for( int z = 0; z < 16; z++ )
 					{
 						unsigned char tileId = 0;
-						if( y <= ( level->getSeaLevel() - 10 ) ) tileId = Tile::stone_Id;
-						else if( y < level->getSeaLevel() ) tileId = Tile::calmWater_Id;
+						if( y <= ( fakeSeaLevel - 10 ) ) tileId = Tile::stone_Id;
+						else if( y < fakeSeaLevel ) tileId = Tile::calmWater_Id;
 
 						bytes[x << 11 | z << 7 | y] = tileId;
 					}
@@ -71,11 +85,12 @@ MultiPlayerChunkCache::MultiPlayerChunkCache(Level *level)
 		}
 		else
 		{
+			const int fakeSeaLevel = GetFakeInfiniteSeaLevel(level);
 			for( int x = 0; x < 16; x++ )
 				for( int y = 0; y < 128; y++ )
 					for( int z = 0; z < 16; z++ )
 					{
-						if( y >= ( level->getSeaLevel() - 1 ) )
+						if( y >= ( fakeSeaLevel - 1 ) )
 						{
 							static_cast<WaterLevelChunk *>(waterChunk)->setLevelChunkBrightness(LightLayer::Sky,x,y,z,15);
 						}

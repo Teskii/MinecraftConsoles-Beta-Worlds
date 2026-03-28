@@ -7837,6 +7837,16 @@ void CMinecraftApp::SetGameHostOption(unsigned int &uiHostSettings, eGameHostOpt
 		}
 
 		break;
+	case eGameHostOption_Beta:
+		if(uiVal!=0)
+		{
+			uiHostSettings|=GAME_HOST_OPTION_BITMASK_BETA;
+		}
+		else
+		{
+			uiHostSettings&=~GAME_HOST_OPTION_BITMASK_BETA;
+		}
+		break;
 	case eGameHostOption_Structures:
 		if(uiVal!=0)
 		{
@@ -8126,6 +8136,9 @@ unsigned int CMinecraftApp::GetGameHostOption(unsigned int uiHostSettings, eGame
 		break;
 	case eGameHostOption_LevelType:
 		return (uiHostSettings&GAME_HOST_OPTION_BITMASK_LEVELTYPE);
+		break;
+	case eGameHostOption_Beta:
+		return (uiHostSettings&GAME_HOST_OPTION_BITMASK_BETA);
 		break;
 	case eGameHostOption_Structures:
 		return (uiHostSettings&GAME_HOST_OPTION_BITMASK_STRUCTURES);

@@ -77,7 +77,7 @@ int GrassTile::getColor(LevelSource *level, int x, int y, int z, int data)
 	{
 		for (int ox = -1; ox <= 1; ox++)
 		{
-			int grassColor = level->getBiome(x + ox, z + oz)->getGrassColor();
+			int grassColor = level->getBiome(x + ox, z + oz)->getGrassColor(level, x + ox, y, z + oz);
 
 			totalRed += (grassColor & 0xff0000) >> 16;
 			totalGreen += (grassColor & 0xff00) >> 8;

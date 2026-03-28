@@ -7,6 +7,8 @@
 #include "net.minecraft.world.entity.animal.h"
 #include "net.minecraft.world.entity.monster.h"
 #include "net.minecraft.world.entity.h"
+#include "GrassColor.h"
+#include "FoliageColor.h"
 #include "Biome.h"
 #include "net.minecraft.world.level.biome.h"
 
@@ -41,6 +43,17 @@ Biome *Biome::smallerExtremeHills = nullptr;
 
 Biome *Biome::jungle = nullptr;
 Biome *Biome::jungleHills = nullptr;
+Biome *Biome::betaRainforest = nullptr;
+Biome *Biome::betaSwampland = nullptr;
+Biome *Biome::betaSeasonalForest = nullptr;
+Biome *Biome::betaForest = nullptr;
+Biome *Biome::betaSavanna = nullptr;
+Biome *Biome::betaShrubland = nullptr;
+Biome *Biome::betaTaiga = nullptr;
+Biome *Biome::betaDesert = nullptr;
+Biome *Biome::betaPlains = nullptr;
+Biome *Biome::betaIceDesert = nullptr;
+Biome *Biome::betaTundra = nullptr;
 
 
 void Biome::staticCtor()
@@ -78,6 +91,26 @@ void Biome::staticCtor()
 
 	Biome::jungle = (new JungleBiome(21))->setColor(0x537b09)->setName(L"Jungle")->setLeafColor(0x537b09)->setTemperatureAndDownfall(1.2f, 0.9f)->setDepthAndScale(0.2f, 0.4f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Jungle, eMinecraftColour_Foliage_Jungle, eMinecraftColour_Water_Jungle,eMinecraftColour_Sky_Jungle);
 	Biome::jungleHills = (new JungleBiome(22))->setColor(0x2c4205)->setName(L"JungleHills")->setLeafColor(0x537b09)->setTemperatureAndDownfall(1.2f, 0.9f)->setDepthAndScale(1.8f, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_JungleHills, eMinecraftColour_Foliage_JungleHills, eMinecraftColour_Water_JungleHills,eMinecraftColour_Sky_JungleHills);
+
+	// Beta biome identities. The Java Beta source gives us the biome set, lookup, and top/bottom blocks.
+	// Color-table assignments here reuse the closest existing LCE visuals where Beta does not provide standalone values.
+	Biome::betaRainforest = (new RainforestBiome(23))->setColor(0x537b09)->setName(L"Beta Rainforest")->setLeafColor(0x537b09)->setTemperatureAndDownfall(1.0f, 1.0f)->setDepthAndScale(0.1f, 0.3f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Jungle, eMinecraftColour_Foliage_Jungle, eMinecraftColour_Water_Jungle, eMinecraftColour_Sky_Jungle)->setUseClimateColorMap();
+	Biome::betaSwampland = (new SwampBiome(24))->setColor(0x07F9B2)->setName(L"Beta Swampland")->setLeafColor(0x4EBA31)->setDepthAndScale(-0.2f, 0.1f)->setTemperatureAndDownfall(0.6f, 0.8f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Forest, eMinecraftColour_Foliage_Forest, eMinecraftColour_Water_Plains, eMinecraftColour_Sky_Swampland)->setUseClimateColorMap();
+	Biome::betaSeasonalForest = (new Biome(25))->setColor(0x4EBA31)->setName(L"Beta Seasonal Forest")->setLeafColor(0x4EBA31)->setTemperatureAndDownfall(1.0f, 0.7f)->setDepthAndScale(0.1f, 0.3f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Forest, eMinecraftColour_Foliage_Forest, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_Forest)->setUseClimateColorMap();
+	Biome::betaForest = (new Biome(26))->setColor(0x056621)->setName(L"Beta Forest")->setLeafColor(0x4EBA31)->setTemperatureAndDownfall(0.7f, 0.8f)->setDepthAndScale(0.1f, 0.3f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Forest, eMinecraftColour_Foliage_Forest, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_Forest)->setUseClimateColorMap();
+	Biome::betaForest->friendlies_wolf.push_back(new MobSpawnerData(eTYPE_WOLF, 5, 4, 4));
+	Biome::betaSavanna = (new Biome(27))->setColor(0xBDB25F)->setName(L"Beta Savanna")->setLeafColor(0xBDB25F)->setTemperatureAndDownfall(0.8f, 0.1f)->setDepthAndScale(0.1f, 0.2f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Desert, eMinecraftColour_Foliage_Desert, eMinecraftColour_Water_Plains, eMinecraftColour_Sky_Plains)->setUseClimateColorMap();
+	Biome::betaShrubland = (new Biome(28))->setColor(0xA1AD20)->setName(L"Beta Shrubland")->setLeafColor(0xA1AD20)->setTemperatureAndDownfall(0.7f, 0.2f)->setDepthAndScale(0.1f, 0.2f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Plains, eMinecraftColour_Foliage_Plains, eMinecraftColour_Water_Plains, eMinecraftColour_Sky_Plains)->setUseClimateColorMap();
+	Biome::betaTaiga = (new TaigaBiome(29))->setColor(0x0b6659)->setName(L"Beta Taiga")->setLeafColor(0x4EBA31)->setTemperatureAndDownfall(0.05f, 0.8f)->setDepthAndScale(0.1f, 0.4f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Taiga, eMinecraftColour_Foliage_Taiga, eMinecraftColour_Water_Taiga, eMinecraftColour_Sky_Taiga)->setUseClimateColorMap();
+	Biome::betaDesert = (new DesertBiome(30))->setColor(0xFA9418)->setName(L"Beta Desert")->setNoRain()->setTemperatureAndDownfall(1.0f, 0.0f)->setDepthAndScale(0.1f, 0.2f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Desert, eMinecraftColour_Foliage_Desert, eMinecraftColour_Water_Desert, eMinecraftColour_Sky_Desert)->setUseClimateColorMap();
+	Biome::betaPlains = (new PlainsBiome(31))->setColor(0x8db360)->setName(L"Beta Plains")->setTemperatureAndDownfall(1.0f, 0.45f)->setDepthAndScale(0.1f, 0.2f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Plains, eMinecraftColour_Foliage_Plains, eMinecraftColour_Water_Plains, eMinecraftColour_Sky_Plains)->setUseClimateColorMap();
+	Biome::betaIceDesert = (new Biome(32))->setColor(0xFA9418)->setName(L"Beta Ice Desert")->setNoRain()->setTemperatureAndDownfall(0.0f, 0.0f)->setDepthAndScale(0.1f, 0.2f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Desert, eMinecraftColour_Foliage_Desert, eMinecraftColour_Water_Desert, eMinecraftColour_Sky_Desert)->setUseClimateColorMap();
+	Biome::betaIceDesert->topMaterial = static_cast<byte>(Tile::sand_Id);
+	Biome::betaIceDesert->material = static_cast<byte>(Tile::sand_Id);
+	Biome::betaIceDesert->friendlies.clear();
+	Biome::betaIceDesert->friendlies_chicken.clear();
+	Biome::betaIceDesert->friendlies_wolf.clear();
+	Biome::betaTundra = (new Biome(33))->setColor(0xFFFFFF)->setName(L"Beta Tundra")->setTemperatureAndDownfall(0.0f, 0.5f)->setDepthAndScale(0.1f, 0.2f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_IcePlains, eMinecraftColour_Foliage_IcePlains, eMinecraftColour_Water_IcePlains, eMinecraftColour_Sky_IcePlains)->setUseClimateColorMap();
 }
 
 Biome::Biome(int id) : id(id)
@@ -100,6 +133,7 @@ Biome::Biome(int id) : id(id)
 	m_grassColor = eMinecraftColour_NOT_SET;
 	m_foliageColor = eMinecraftColour_NOT_SET;
 	m_waterColor = eMinecraftColour_NOT_SET;
+	m_useClimateColorMap = false;
 
 	/*	4J - removing these so that we can consistently return newly created trees via getTreeFeature, and let the calling function be resposible for deleting the returned tree
 	normalTree = new TreeFeature();
@@ -167,6 +201,12 @@ Biome *Biome::setDepthAndScale(float depth, float scale)
 Biome *Biome::setNoRain()
 {
 	_hasRain = false;
+	return this;
+}
+
+Biome *Biome::setUseClimateColorMap()
+{
+	m_useClimateColorMap = true;
 	return this;
 }
 
@@ -288,20 +328,38 @@ void Biome::decorate(Level *level, Random *random, int xo, int zo)
 
 int Biome::getGrassColor()
 {
-	//double temp = Mth::clamp(getTemperature(), 0.0f, 1.0f);
-	//double rain = Mth::clamp(getDownfall(), 0.0f, 1.0f);
-
-	//return GrassColor::get(temp, rain);
 	return Minecraft::GetInstance()->getColourTable()->getColor( m_grassColor );
+}
+
+int Biome::getGrassColor(LevelSource *level, int x, int y, int z)
+{
+	if (m_useClimateColorMap)
+	{
+		BiomeCache::Block *block = level->getBiomeSource()->getBlockAt(x, z);
+		double temp = block->getTemperature(x, z);
+		double rain = block->getDownfall(x, z);
+		return GrassColor::get(temp, rain);
+	}
+
+	return getGrassColor();
 }
 
 int Biome::getFolageColor()
 {
-	//double temp = Mth::clamp(getTemperature(), 0.0f, 1.0f);
-	//double rain = Mth::clamp(getDownfall(), 0.0f, 1.0f);
-
-	//return FoliageColor::get(temp, rain);
 	return Minecraft::GetInstance()->getColourTable()->getColor( m_foliageColor );
+}
+
+int Biome::getFolageColor(LevelSource *level, int x, int y, int z)
+{
+	if (m_useClimateColorMap)
+	{
+		BiomeCache::Block *block = level->getBiomeSource()->getBlockAt(x, z);
+		double temp = block->getTemperature(x, z);
+		double rain = block->getDownfall(x, z);
+		return FoliageColor::get(temp, rain);
+	}
+
+	return getFolageColor();
 }
 
 // 4J Added

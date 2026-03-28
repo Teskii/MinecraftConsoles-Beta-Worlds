@@ -2,11 +2,13 @@
 using namespace std;
 
 #include "ChunkSource.h"
+#include "perlinCommon.h"
 
 class ProgressListener;
 class LargeFeature;
 class StrongholdFeature;
 class VillageFeature;
+class BetaOldVillageFeature;
 class MineShaftFeature;
 class PerlinNoise;
 class RandomScatteredLargeFeature;
@@ -39,6 +41,7 @@ private:
 
 public:
 	PerlinNoise *forestNoise;
+	PermutationTable betaForestNoise[8];
 
 private:
 	Level *level;
@@ -63,8 +66,10 @@ public:
 
 private:
 	LargeFeature *caveFeature;
+	LargeFeature *betaCaveFeature;
 	StrongholdFeature *strongholdFeature;
 	VillageFeature *villageFeature;
+	BetaOldVillageFeature *betaOldVillageFeature;
 	MineShaftFeature *mineShaftFeature;
 	RandomScatteredLargeFeature *scatteredFeature;
 	LargeFeature *canyonFeature;
@@ -74,6 +79,7 @@ private:
 public:
 	virtual LevelChunk *getChunk(int xOffs, int zOffs);
 	virtual void lightChunk(LevelChunk *lc);	// 4J added
+	double getBetaTreeCountNoise(double x, double z) const;
 
 private:
 	doubleArray getHeights(doubleArray buffer, int x, int y, int z, int xSize, int ySize, int zSize, BiomeArray& biomes);

@@ -706,27 +706,28 @@ bool MinecraftServer::initServer(int64_t seed, NetworkGameInitData *initData, DW
 
 	int64_t levelNanoTime = System::nanoTime();
 
-        wstring levelName = (initData && !initData->levelName.empty()) ? initData->levelName : GetDedicatedServerString(settings, L"level-name", L"world");
-		wstring levelTypeString;
-
-	bool gameRuleUseFlatWorld = false;
-	if(app.getLevelGenerationOptions() != nullptr)
-	{
-		gameRuleUseFlatWorld = app.getLevelGenerationOptions()->getuseFlatWorld();
-	}
-	if(gameRuleUseFlatWorld || app.GetGameHostOption(eGameHostOption_LevelType)>0)
-	{
-		levelTypeString = GetDedicatedServerString(settings, L"level-type",  L"flat");
-	}
-	else
-	{
-		levelTypeString = GetDedicatedServerString(settings, L"level-type",L"default");
-	}
-
+    wstring levelName = (initData && !initData->levelName.empty()) ? initData->levelName : GetDedicatedServerString(settings, L"level-name", L"world");
+	wstring levelTypeString = GetDedicatedServerString(settings, L"level-type", L"default");
 	LevelType *pLevelType = LevelType::getLevelType(levelTypeString);
 	if (pLevelType == nullptr)
 	{
 		pLevelType = LevelType::lvl_normal;
+	}
+
+	bool gameRuleUseFlatWorld = false;
+	bool gameRuleUseBetaWorld = false;
+	if(app.getLevelGenerationOptions() != nullptr)
+	{
+		gameRuleUseFlatWorld = app.getLevelGenerationOptions()->getuseFlatWorld();
+		gameRuleUseBetaWorld = app.getLevelGenerationOptions()->getuseBetaWorld();
+	}
+	if (gameRuleUseBetaWorld || app.GetGameHostOption(eGameHostOption_Beta) > 0)
+	{
+		pLevelType = LevelType::lvl_beta;
+	}
+	else if (gameRuleUseFlatWorld || app.GetGameHostOption(eGameHostOption_LevelType) > 0)
+	{
+		pLevelType = LevelType::lvl_flat;
 	}
 
 	ProgressRenderer *mcprogress = Minecraft::GetInstance()->progressRenderer;

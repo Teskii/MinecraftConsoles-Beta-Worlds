@@ -46,8 +46,19 @@ public:
 	static Biome *smallerExtremeHills;
 	static Biome *jungle;
 	static Biome *jungleHills;
+	static Biome *betaRainforest;
+	static Biome *betaSwampland;
+	static Biome *betaSeasonalForest;
+	static Biome *betaForest;
+	static Biome *betaSavanna;
+	static Biome *betaShrubland;
+	static Biome *betaTaiga;
+	static Biome *betaDesert;
+	static Biome *betaPlains;
+	static Biome *betaIceDesert;
+	static Biome *betaTundra;
 
-	static const int BIOME_COUNT = 23; // 4J Stu added
+	static const int BIOME_COUNT = 34; // 4J Stu added
 
 public:
 	wstring m_name;
@@ -106,8 +117,10 @@ private:
 	eMinecraftColour m_foliageColor;
 	eMinecraftColour m_waterColor;
 	eMinecraftColour m_skyColor;
+	bool m_useClimateColorMap;
 
 	Biome *setNoRain();
+	Biome *setUseClimateColorMap();
 
 protected:
 	/* removing these so that we can consistently return newly created trees via getTreeFeature, and let the calling function be resposible for deleting the returned tree
@@ -148,6 +161,8 @@ public:
 	virtual void decorate(Level *level, Random *random, int xo, int zo);
 
 	virtual int getGrassColor();
+	virtual int getGrassColor(LevelSource *level, int x, int y, int z);
 	virtual int getFolageColor();
+	virtual int getFolageColor(LevelSource *level, int x, int y, int z);
 	virtual int getWaterColor(); // 4J Added
 };

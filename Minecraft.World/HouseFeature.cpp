@@ -2,7 +2,7 @@
 #include "net.minecraft.world.level.h"
 #include "HouseFeature.h"
 #include "net.minecraft.world.level.tile.h"
-#include "net.minecraft.world.entity.monster.h"
+#include "net.minecraft.world.entity.npc.h"
 #include "net.minecraft.world.item.h"
 
 bool HouseFeature::place(Level *level, Random *random, int x, int y, int z)
@@ -185,9 +185,12 @@ bool HouseFeature::place(Level *level, Random *random, int x, int y, int z)
 		}
 	}
 
-	shared_ptr<PigZombie>(pz) = std::make_shared<PigZombie>(level);
-	pz->moveTo(x0 + w / 2.0 + 0.5, y0 + 0.5, z0 + d / 2.0 + 0.5, 0, 0);
-	level->addEntity(pz);
+	if (level->canCreateMore(eTYPE_VILLAGER, Level::eSpawnType_Breed))
+	{
+		shared_ptr<Villager> villager = std::make_shared<Villager>(level, random->nextInt(Villager::PROFESSION_MAX));
+		villager->moveTo(x0 + w / 2.0 + 0.5, y0 + 0.5, z0 + d / 2.0 + 0.5, 0, 0);
+		level->addEntity(villager);
+	}
 
 	return true;
 

@@ -622,6 +622,7 @@ enum eGameHostOption
 	eGameHostOption_Tutorial, // special case
 	eGameHostOption_GameType,
 	eGameHostOption_LevelType, // flat or default
+	eGameHostOption_Beta,
 	eGameHostOption_Structures, 
 	eGameHostOption_BonusChest, 
 	eGameHostOption_HasBeenInCreative,

@@ -18,6 +18,7 @@ LevelType *LevelType::lvl_normal=nullptr;// = new LevelType(0, "default", 1).set
 LevelType *LevelType::lvl_flat=nullptr;// = new LevelType(1, "flat");
 LevelType *LevelType::lvl_largeBiomes = nullptr;// = new LevelType(2, "largeBiomes");
 LevelType *LevelType::lvl_normal_1_1=nullptr;// = new LevelType(8, "default_1_1", 0).setSelectableByUser(false);
+LevelType *LevelType::lvl_beta = nullptr;
 
 void LevelType::staticCtor()
 {
@@ -27,7 +28,8 @@ void LevelType::staticCtor()
 	lvl_flat = new LevelType(1, L"flat");
 	lvl_largeBiomes = new LevelType(2, L"largeBiomes");
 	lvl_normal_1_1 = new LevelType(8, L"default_1_1", 0);
-	lvl_normal_1_1->setSelectableByUser(false);	
+	lvl_normal_1_1->setSelectableByUser(false);
+	lvl_beta = new LevelType(3, L"beta");
 }
 
 LevelType::LevelType(int id, wstring generatorName) 
@@ -101,13 +103,11 @@ bool LevelType::hasReplacement()
 
 LevelType *LevelType::getLevelType(wstring name) 
 {
-	if(name.length()>0)
-	{	
+	if(name.length() > 0)
+	{
 		for (int i = 0; i < 16; i++) 
 		{
-			wstring genname=levelTypes[i]->m_generatorName;
-
-			if (levelTypes[i] != nullptr && (genname.compare(name)==0)) 
+			if (levelTypes[i] != nullptr && levelTypes[i]->m_generatorName.compare(name) == 0)
 			{
 				return levelTypes[i];
 			}

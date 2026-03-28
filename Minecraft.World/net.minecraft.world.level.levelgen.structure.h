@@ -8,6 +8,7 @@
 #include "NetherBridgeFeature.h"
 #include "NetherBridgePieces.h"
 #include "StrongholdFeature.h"
+#include "BetaOldVillageFeature.h"
 #include "StrongholdPieces.h"
 #include "StructureFeature.h"
 #include "StructureFeatureIO.h"

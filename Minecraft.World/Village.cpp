@@ -3,6 +3,8 @@
 #include "net.minecraft.world.entity.npc.h"
 #include "net.minecraft.world.entity.animal.h"
 #include "net.minecraft.world.level.h"
+#include "LevelData.h"
+#include "LevelType.h"
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.phys.h"
 #include "BasicTypeContainers.h"
@@ -66,7 +68,18 @@ void Village::tick(int tick)
 	if (tick % 30 == 0) countGolem();
 
 	int idealGolemCount = populationSize / 10;
-	if (golemCount < idealGolemCount && doorInfos.size() > 20 && level->random->nextInt(7000) == 0)
+	int requiredDoorCount = 20;
+	int requiredPopulationForGolem = 10;
+	if (level->getLevelData()->getGenerator() == LevelType::lvl_beta)
+	{
+		requiredDoorCount = 4;
+		requiredPopulationForGolem = 6;
+		if (populationSize >= requiredPopulationForGolem && idealGolemCount == 0)
+		{
+			idealGolemCount = 1;
+		}
+	}
+	if (populationSize >= requiredPopulationForGolem && golemCount < idealGolemCount && doorInfos.size() > requiredDoorCount && level->random->nextInt(7000) == 0)
 	{
 		Vec3 *spawnPos = findRandomSpawnPos(center->x, center->y, center->z, 2, 4, 2);
 		if (spawnPos != nullptr)

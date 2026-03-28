@@ -37,6 +37,8 @@
 #include "Camera.h"
 
 #include "..\Minecraft.World\MobEffect.h"
+#include "..\Minecraft.World\GrassColor.h"
+#include "..\Minecraft.World\FoliageColor.h"
 #include "..\Minecraft.World\Difficulty.h"
 #include "..\Minecraft.World\net.minecraft.world.level.h"
 #include "..\Minecraft.World\net.minecraft.world.entity.h"
@@ -348,8 +350,8 @@ void Minecraft::init()
 
 	// 4J Stu - Not using these any more
 	//WaterColor::init(textures->loadTexturePixels(L"misc/watercolor.png"));
-	//GrassColor::init(textures->loadTexturePixels(L"misc/grasscolor.png"));
-	//FoliageColor::init(textures->loadTexturePixels(L"misc/foliagecolor.png"));
+	GrassColor::init(textures->loadTexturePixels((TEXTURE_NAME)TN_COUNT, L"misc/grasscolor.png"));
+	FoliageColor::init(textures->loadTexturePixels((TEXTURE_NAME)TN_COUNT, L"misc/foliagecolor.png"));
 
 	gameRenderer = new GameRenderer(this);
 	EntityRenderDispatcher::instance->itemInHandRenderer = new ItemInHandRenderer(this,false);

@@ -148,6 +148,7 @@ private:
 	// This should match the "MapOptionsRule" definition in the XML schema
 	int64_t m_seed;
 	bool m_useFlatWorld;
+	bool m_useBetaWorld;
 	Pos *m_spawnPos;
 	int m_bHasBeenInCreative;
 	vector<ApplySchematicRuleDefinition *> m_schematicRules;
@@ -181,6 +182,9 @@ public:
 	int getLevelHasBeenInCreative();
 	Pos *getSpawnPos();
 	bool getuseFlatWorld();
+	bool getuseBetaWorld();
+	void setuseFlatWorld(bool val);
+	void setuseBetaWorld(bool val);
 
 	void processSchematics(LevelChunk *chunk);
 	void processSchematicsLighting(LevelChunk *chunk);

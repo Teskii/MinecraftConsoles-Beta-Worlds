@@ -5,6 +5,7 @@
 #include "net.minecraft.world.level.storage.h"
 #include "dimension.h"
 #include "BiomeSource.h"
+#include "BetaBiomeSource.h"
 #include "FixedBiomeSource.h"
 #include "OldChunkStorage.h"
 #include "HellDimension.h"
@@ -50,6 +51,10 @@ void Dimension::init()
 			FlatGeneratorInfo *generator = FlatGeneratorInfo::fromValue(level->getLevelData()->getGeneratorOptions());
 			biomeSource = new FixedBiomeSource(Biome::biomes[generator->getBiome()], 0.5f, 0.5f);
 			delete generator;
+		}
+		else if (level->getLevelData()->getGenerator() == LevelType::lvl_beta)
+		{
+			biomeSource = new BetaBiomeSource(level);
 		}
 		else
 		{
@@ -197,6 +202,11 @@ Dimension *Dimension::getNew(int id)
 
 float Dimension::getCloudHeight()
 {
+	if (level != nullptr && level->getLevelData()->getGenerator() == LevelType::lvl_beta)
+	{
+		return 108.0f;
+	}
+
 	return static_cast<float>(Level::genDepth);
 }
 
