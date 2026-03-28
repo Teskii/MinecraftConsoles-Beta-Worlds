@@ -6,15 +6,11 @@ using namespace std;
 
 #include "miniaudio.h"
 
-constexpr float SFX_3D_MIN_DISTANCE = 1.0f;
-constexpr float SFX_3D_MAX_DISTANCE = 16.0f;
-constexpr float SFX_3D_ROLLOFF = 0.5f;
-constexpr float SFX_VOLUME_MULTIPLIER = 1.5f;
-constexpr float SFX_MAX_GAIN = 1.5f;
-
 enum eMUSICFILES
 {
+	//Volume Alpha Album
 	eStream_Overworld_Calm1 = 0,
+	
 	eStream_Overworld_Calm2,
 	eStream_Overworld_Calm3,
 	eStream_Overworld_hal1,
@@ -23,8 +19,27 @@ enum eMUSICFILES
 	eStream_Overworld_hal4,
 	eStream_Overworld_nuance1,
 	eStream_Overworld_nuance2,
+	//Unused Alpha tracks   
+	eStream_Overworld_Eleven,
+	eStream_Overworld_One_Last_Game,
+	eStream_Overworld_Excuse,
+	eStream_Overworld_equinoxe,
+	eStream_Overworld_fern,
+	//ONE album by c418
+	
+	eStream_Overworld_imposter_syndrome, 
+	eStream_Overworld_Pr_Department, 
+	eStream_Overworld_for_the_sake_of_making_games,
+	
+	eStream_Overworld_wooden_love,
+	//Seven Years of Server Data Album by c418
+	eStream_Overworld_breezy,
+	eStream_Overworld_mob_fest,
+	//dry hopes
 #ifndef _XBOX
 	// Add the new music tracks
+	//Volume Beta Album
+	
 	eStream_Overworld_Creative1,
 	eStream_Overworld_Creative2,
 	eStream_Overworld_Creative3,
@@ -35,18 +50,40 @@ enum eMUSICFILES
 	eStream_Overworld_Menu2,
 	eStream_Overworld_Menu3,
 	eStream_Overworld_Menu4,
+	
 	//Unused Alpha Tracks
 	eStream_Overworld_Door,
 	eStream_Overworld_Chris,
+	//Unused Beta Tracks
+	eStream_Overworld_Ki,
+	eStream_Overworld_Kyoto,
+	eStream_Overworld_flake,
+	//Volume Gamma Album
+	eStream_Overworld_nordic_beach,
+	eStream_Overworld_cobblestone,
+	//One Album by c418
+	eStream_Overworld_cliffside_hinsen,
+	//Seven Years of Server Data Album by c418
+	eStream_Overworld_atempause,
+	eStream_Overworld_another_weird_ambient_tune,
+	eStream_Overworld_BGC418,
+
+	
+	
+	
 #endif
 	eStream_Overworld_piano1,
 	eStream_Overworld_piano2,
+	
 	eStream_Overworld_piano3, // <-- make piano3 the last overworld one
+
 	// Nether
 	eStream_Nether1,
 	eStream_Nether2,
 	eStream_Nether3,
 	eStream_Nether4,
+	eStream_nether5,
+	eStream_mau5cave,
 	// The End
 	eStream_end_dragon,
 	eStream_end_end,
@@ -62,6 +99,7 @@ enum eMUSICFILES
 	eStream_CD_10,
 	eStream_CD_11,
 	eStream_CD_12,
+	//eStream_CD_13,
 	eStream_Max,
 };
 

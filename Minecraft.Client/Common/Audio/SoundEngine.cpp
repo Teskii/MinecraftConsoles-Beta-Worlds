@@ -105,7 +105,9 @@ char SoundEngine::m_szRedistName[]={"redist"};
 
 const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 {
-	"calm1",
+	//Volume Alpha Album
+	"calm1",      
+	
 	"calm2",
 	"calm3",
 	"hal1",
@@ -114,8 +116,28 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"hal4",
 	"nuance1",
 	"nuance2",
+	//Unused Alpha tracks   
+	"eleven",
+	"one_last_game",
+	"excuse",
+	"equinoxe",
+	"fern",
+	//ONE album by c418
+	
+	"imposter_syndrome",
+	"pr_department",
+	"for_the_sake_of_making_games",
+	"wooden_love",
+	//Seven Years of Server Data Album by c418
+	"breezy",
+	"mob_fest",
+	 
+
+
 
 #ifndef _XBOX
+	
+	//Volume Beta Album
 	"creative1",
 	"creative2",
 	"creative3",
@@ -126,9 +148,32 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"menu2",
 	"menu3",
 	"menu4",
+	
 	//Unused Alpha Tracks
 	"door",
 	"chris",
+	//Unused Beta Tracks
+	"ki",
+	"kyoto",
+	"flake",
+	
+	//Volume Gamma Album   
+	"nordic_beach",
+	"cobblestone",
+	//One Album by c418
+	"wooden_love",
+	"cliffside_hinsen",
+	//Seven Years of Server Data Album by c418
+	"atempause",
+	"another_weird_ambient_tune",
+	"BGC418",
+	
+
+	
+	
+	
+	
+	
 #endif
 
 	"piano1",
@@ -140,6 +185,8 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"nether2",
 	"nether3",
 	"nether4",
+	"nether5",
+	"mau5cave"
 
 	// The End
 	"the_end_dragon_alive",
@@ -158,6 +205,8 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"strad",
 	"ward",
 	"where_are_we_now"
+	
+	//"droopy_likes_richochet"
 };
 
 std::vector<MiniAudioSound*> m_activeSounds;
@@ -263,9 +312,9 @@ void SoundEngine::updateMiniAudio()
             continue;
         }
 
-        float finalVolume = s->info.volume * m_MasterEffectsVolume * SFX_VOLUME_MULTIPLIER;
-        if (finalVolume > SFX_MAX_GAIN)
-            finalVolume = SFX_MAX_GAIN;
+        float finalVolume = s->info.volume * m_MasterEffectsVolume;
+        if (finalVolume > 1.0f)
+            finalVolume = 1.0f;
 
         ma_sound_set_volume(&s->sound, finalVolume);
         ma_sound_set_pitch(&s->sound, s->info.pitch);
@@ -560,13 +609,10 @@ void SoundEngine::play(int iSound, float x, float y, float z, float volume, floa
     }
 
     ma_sound_set_spatialization_enabled(&s->sound, MA_TRUE);
-    ma_sound_set_min_distance(&s->sound, SFX_3D_MIN_DISTANCE);
-    ma_sound_set_max_distance(&s->sound, SFX_3D_MAX_DISTANCE);
-    ma_sound_set_rolloff(&s->sound, SFX_3D_ROLLOFF);
 
-    float finalVolume = volume * m_MasterEffectsVolume * SFX_VOLUME_MULTIPLIER;
-    if (finalVolume > SFX_MAX_GAIN)
-        finalVolume = SFX_MAX_GAIN;
+    float finalVolume = volume * m_MasterEffectsVolume;
+    if (finalVolume > 1.0f)
+        finalVolume = 1.0f;
 
     ma_sound_set_volume(&s->sound, finalVolume);
     ma_sound_set_pitch(&s->sound, pitch);
