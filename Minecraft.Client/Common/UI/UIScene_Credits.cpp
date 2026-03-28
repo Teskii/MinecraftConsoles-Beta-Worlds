@@ -5,7 +5,7 @@
 
 #define CREDIT_ICON -2
 
-SCreditTextItemDef UIScene_Credits::gs_aCreditDefs[MAX_CREDIT_STRINGS] = 
+SCreditTextItemDef UIScene_Credits::gs_aCreditDefs[] = 
 {
 	{ L"MOJANG",										NO_TRANSLATED_STRING,			NO_TRANSLATED_STRING,eExtraLargeText },
 	{ L"",												NO_TRANSLATED_STRING,			NO_TRANSLATED_STRING,eSmallText },	// extra blank line
@@ -504,9 +504,14 @@ SCreditTextItemDef UIScene_Credits::gs_aCreditDefs[MAX_CREDIT_STRINGS] =
     {L"github.com/smartcmd/MinecraftConsoles", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eSmallText},
     {L"", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eSmallText},
     {L"", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eSmallText},
-    {L"Additional Thanks", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eLargeText},
-    {L"notpies - Security Fixes", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eSmallText}
+	{L"Additional Thanks", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eLargeText},
+	{L"notpies - Security Fixes", NO_TRANSLATED_STRING, NO_TRANSLATED_STRING, eSmallText}
 };
+
+int UIScene_Credits::GetBaseCreditTextDefCount()
+{
+	return static_cast<int>(sizeof(gs_aCreditDefs) / sizeof(gs_aCreditDefs[0]));
+}
 
 UIScene_Credits::UIScene_Credits(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
@@ -516,7 +521,8 @@ UIScene_Credits::UIScene_Credits(int iPad, void *initData, UILayer *parentLayer)
 	m_bAddNextLabel = false;
 
 	// How many lines of text are in the credits?
-	m_iNumTextDefs = MAX_CREDIT_STRINGS;
+	const int baseCreditTextDefCount = GetBaseCreditTextDefCount();
+	m_iNumTextDefs = baseCreditTextDefCount;
 
 	// Are there any additional lines needed for the DLC credits?
 	m_iNumTextDefs+=app.GetDLCCreditsCount();
@@ -524,14 +530,17 @@ UIScene_Credits::UIScene_Credits(int iPad, void *initData, UILayer *parentLayer)
 	m_iCurrDefIndex = -1;
 
 	// Add the first 20 Flash can cope with
-	for(unsigned int i = 0; i < 20; ++i)
+	for(int i = 0; i < 20 && i < baseCreditTextDefCount; ++i)
 	{
 		++m_iCurrDefIndex;
 
 		// Set up the new text element.
 		if ( gs_aCreditDefs[i].m_iStringID[0] == NO_TRANSLATED_STRING )
 		{
-			setNextLabel(gs_aCreditDefs[i].m_Text,gs_aCreditDefs[i].m_eType);
+			if( gs_aCreditDefs[i].m_Text != nullptr )
+			{
+				setNextLabel(gs_aCreditDefs[i].m_Text,gs_aCreditDefs[i].m_eType);
+			}
 		}
 		else // using additional translated string.
 		{
@@ -578,6 +587,7 @@ void UIScene_Credits::tick()
 	if(m_bAddNextLabel)
 	{
 		m_bAddNextLabel = false;
+		const int baseCreditTextDefCount = GetBaseCreditTextDefCount();
 
 		const SCreditTextItemDef* pDef;
 
@@ -590,11 +600,11 @@ void UIScene_Credits::tick()
 			m_iCurrDefIndex = 0;
 		}
 
-		if(m_iCurrDefIndex >= MAX_CREDIT_STRINGS)
+		if(m_iCurrDefIndex >= baseCreditTextDefCount)
 		{
-			app.DebugPrintf("DLC credit %d\n",m_iCurrDefIndex-MAX_CREDIT_STRINGS);
+			app.DebugPrintf("DLC credit %d\n",m_iCurrDefIndex-baseCreditTextDefCount);
 			// DLC credit
-			pDef = app.GetDLCCredits(m_iCurrDefIndex-MAX_CREDIT_STRINGS);
+			pDef = app.GetDLCCredits(m_iCurrDefIndex-baseCreditTextDefCount);
 		}
 		else
 		{
@@ -624,8 +634,7 @@ void UIScene_Credits::tick()
 				LPWSTR creditsString = new wchar_t[ 128 ];
 				if (pDef->m_iStringID[0]==NO_TRANSLATED_STRING)
 				{
-					ZeroMemory(creditsString, 128);
-					memcpy( creditsString, sanitisedString.c_str(), sizeof(WCHAR) * sanitisedString.length() );
+					wcsncpy_s(creditsString, 128, sanitisedString.c_str(), _TRUNCATE);
 				}
 				else if(pDef->m_iStringID[1]!=NO_TRANSLATED_STRING)
 				{

@@ -98,7 +98,11 @@ UIString::UIString(int ids)
 #ifdef __PS3__
 	StringBuilder builder = StringBuilder( new IdsStringBuilder(ids) );
 #else
-	StringBuilder builder = [ids](){ return app.GetString(ids); };
+	StringBuilder builder = [ids]()
+	{
+		LPCWSTR string = app.GetString(ids);
+		return string != nullptr ? wstring(string) : wstring();
+	};
 #endif
 	UIStringCore *core = new UIStringCore( builder );
 	m_core = shared_ptr<UIStringCore>(core);
@@ -125,7 +129,7 @@ UIString::UIString(const wstring &constant)
 
 UIString::UIString(const wchar_t *constant)
 {
-	wstring str = wstring(constant);
+	wstring str = constant != nullptr ? wstring(constant) : wstring();
 	UIStringCore *core = new UIStringCore(str);
 	m_core = shared_ptr<UIStringCore>(core);
 }

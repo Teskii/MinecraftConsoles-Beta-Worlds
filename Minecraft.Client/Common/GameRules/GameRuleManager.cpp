@@ -52,6 +52,7 @@ const WCHAR *GameRuleManager::wchAttrNameA[] =
 	L"useCoords", // eGameRuleAttr_useCoords
 	L"seed", // eGameRuleAttr_seed
 	L"flatworld", // eGameRuleAttr_flatworld
+	L"betaworld", // eGameRuleAttr_betaworld
 	L"filename", // eGameRuleAttr_filename
 	L"rot", // eGameRuleAttr_rot
 	L"data", // eGameRuleAttr_data
@@ -82,6 +83,9 @@ const WCHAR *GameRuleManager::wchAttrNameA[] =
 	L"biomeId", // eGameRuleAttr_biomeId
 	L"feature", // eGameRuleAttr_feature
 };
+
+static_assert((sizeof(GameRuleManager::wchTagNameA) / sizeof(GameRuleManager::wchTagNameA[0])) == ConsoleGameRules::eGameRuleType_Count, "Game rule tag names are out of sync with ConsoleGameRules::EGameRuleType.");
+static_assert((sizeof(GameRuleManager::wchAttrNameA) / sizeof(GameRuleManager::wchAttrNameA[0])) == ConsoleGameRules::eGameRuleAttr_Count, "Game rule attribute names are out of sync with ConsoleGameRules::EGameRuleAttr.");
 
 GameRuleManager::GameRuleManager()
 {

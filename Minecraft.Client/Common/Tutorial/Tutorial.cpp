@@ -1684,6 +1684,11 @@ bool Tutorial::setMessage(PopupMessageDetails *message)
 
 	if(message != nullptr && (message->m_messageId > 0 || !message->m_messageString.empty()) )
 	{
+		auto getSafeWideString = [](LPCWSTR text)
+		{
+			return text != nullptr ? text : L"";
+		};
+
 		m_lastMessageState = m_CurrentState;
 
 		if(!message->m_replaceCurrent) lastMessageTime = GetTickCount();
@@ -1699,7 +1704,7 @@ bool Tutorial::setMessage(PopupMessageDetails *message)
             if( it != messages.end() && it->second != nullptr )
 			{
 				TutorialMessage *messageString = it->second;
-				text = wstring( messageString->getMessageForDisplay() );
+				text = wstring( getSafeWideString(messageString->getMessageForDisplay()) );
 
 				// 4J Stu - Quick fix for boat tutorial being incorrect
 				if(message->m_messageId == IDS_TUTORIAL_TASK_BOAT_OVERVIEW)
@@ -1709,7 +1714,7 @@ bool Tutorial::setMessage(PopupMessageDetails *message)
 			}
 			else
 			{
-				text = wstring( app.GetString(message->m_messageId) );
+				text = wstring( getSafeWideString(app.GetString(message->m_messageId)) );
 
 				// 4J Stu - Quick fix for boat tutorial being incorrect
 				if(message->m_messageId == IDS_TUTORIAL_TASK_BOAT_OVERVIEW)
@@ -1729,7 +1734,7 @@ bool Tutorial::setMessage(PopupMessageDetails *message)
             if(it != messages.end() && it->second != nullptr)
 			{
 				TutorialMessage *prompt = it->second;
-				text.append( prompt->getMessageForDisplay() );
+				text.append( getSafeWideString(prompt->getMessageForDisplay()) );
 			}
 		}
 
@@ -1744,7 +1749,7 @@ bool Tutorial::setMessage(PopupMessageDetails *message)
 		popupInfo.tutorial = this;
 		if( !message->m_titleString.empty() || message->m_titleId > 0 )
 		{
-			if(message->m_titleString.empty()) title = wstring( app.GetString(message->m_titleId) );
+			if(message->m_titleString.empty()) title = wstring( getSafeWideString(app.GetString(message->m_titleId)) );
 			else title = message->m_titleString;
 
 			popupInfo.title = title.c_str();

@@ -17,6 +17,7 @@ UIComponent_TutorialPopup::UIComponent_TutorialPopup(int iPad, void *initData, U
 	m_lastInteractSceneMoved = nullptr;
 	m_lastSceneMovedLeft = false;
 	m_bAllowFade = false;
+	m_tutorial = nullptr;
 	m_iconItem = nullptr;
 	m_iconIsFoil = false;
 
@@ -71,6 +72,11 @@ void UIComponent_TutorialPopup::handleReload()
 
 void UIComponent_TutorialPopup::SetTutorialDescription(TutorialPopupInfo *info)
 {
+	if( info->tutorial != nullptr )
+	{
+		m_tutorial = info->tutorial;
+	}
+
 	m_interactScene = info->interactScene;
 
 	wstring parsed = _SetIcon(info->icon, info->iAuxVal, info->isFoil, info->desc);
@@ -99,7 +105,7 @@ void UIComponent_TutorialPopup::SetVisible(bool visible)
 {
 	m_parentLayer->showComponent(0,eUIComponent_TutorialPopup,visible);
 
-	if( visible && m_bAllowFade )
+	if( visible && m_bAllowFade && m_tutorial != nullptr )
 	{
 		//Initialise a timer to fade us out again
 		app.DebugPrintf("UIComponent_TutorialPopup::SetVisible: setting TUTORIAL_POPUP_FADE_TIMER_ID to %d\n",m_tutorial->GetTutorialDisplayMessageTime());
@@ -147,7 +153,7 @@ void UIComponent_TutorialPopup::_SetDescription(UIScene *interactScene, const ws
 		app.DebugPrintf("_SetDescription2: setting TUTORIAL_POPUP_MOVE_SCENE_TIMER_ID\n");
 		addTimer(TUTORIAL_POPUP_MOVE_SCENE_TIMER_ID,TUTORIAL_POPUP_MOVE_SCENE_TIME);
 
-		if( allowFade )
+		if( allowFade && m_tutorial != nullptr )
 		{
 			//Initialise a timer to fade us out again
 			app.DebugPrintf("_SetDescription: setting TUTORIAL_POPUP_FADE_TIMER_ID\n");
@@ -205,7 +211,7 @@ void UIComponent_TutorialPopup::_SetDescription(UIScene *interactScene, const ws
 
 wstring UIComponent_TutorialPopup::_SetIcon(int icon, int iAuxVal, bool isFoil, LPCWSTR desc)
 {
-	wstring temp(desc);
+	wstring temp(desc != nullptr ? desc : L"");
 
 	bool isFixedIcon = false;
 	
@@ -427,13 +433,17 @@ wstring UIComponent_TutorialPopup::ParseDescription(int iPad, wstring &text)
 void UIComponent_TutorialPopup::UpdateInteractScenePosition(bool visible)
 {
 	if( m_interactScene == nullptr ) return;
+	Minecraft *minecraft = Minecraft::GetInstance();
+	if( minecraft == nullptr ) return;
+	if( m_iPad < 0 || m_iPad >= XUSER_MAX_COUNT ) return;
+	if( minecraft->localplayers[m_iPad] == nullptr ) return;
 
 	// 4J-PB - check this players screen section to see if we should allow the animation
 	bool bAllowAnim=false;
 	bool isCraftingScene = (m_interactScene->getSceneType() == eUIScene_Crafting2x2Menu) || (m_interactScene->getSceneType() == eUIScene_Crafting3x3Menu);
 	bool isCreativeScene = (m_interactScene->getSceneType() == eUIScene_CreativeMenu);
 	bool isTradingScene = (m_interactScene->getSceneType() == eUIScene_TradingMenu);
-	switch(Minecraft::GetInstance()->localplayers[m_iPad]->m_iScreenSection)
+	switch(minecraft->localplayers[m_iPad]->m_iScreenSection)
 	{
 	case C4JRender::VIEWPORT_TYPE_FULLSCREEN:
 	case C4JRender::VIEWPORT_TYPE_SPLIT_TOP:
