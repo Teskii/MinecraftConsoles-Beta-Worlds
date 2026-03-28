@@ -218,6 +218,23 @@ cmake --build --preset windows64-debug --target Minecraft.Client
 
 For more information, see [COMPILE.md](COMPILE.md).
 
+## References and Acknowledgements
+
+ Implementations of the beta world generation are based from the following repositories:
+
+- [minecrafthome/minecraft-beta-alpha-terrain-generation-cpp](https://github.com/minecrafthome/minecraft-beta-alpha-terrain-generation-cpp) - reference for legacy Alpha/Beta terrain generation and biome distribtuion.
+- [Spottedleaf/OldGenerator](https://github.com/Spottedleaf/OldGenerator) - reference for Beta 1.7.3 world decoration.
+
+These repositories were used as technical references during development. All project code was reviewed and integrated into this codebase separately unless otherwise noted.
+
+
+## Transparency Notice
+
+This specific fork of the project was created with some AI-assisted help during parts of the development and documentation process. All AI-assisted contributions were reviewed, edited, and validated before being included.
+
+
 ## Star History
+
+
 
 [![Star History Chart](https://api.star-history.com/svg?repos=smartcmd/MinecraftConsoles&type=date&legend=top-left)](https://www.star-history.com/?spm=a2c6h.12873639.article-detail.7.7b9d7fabjNxTRk#smartcmd/MinecraftConsoles&type=date&legend=top-left)
