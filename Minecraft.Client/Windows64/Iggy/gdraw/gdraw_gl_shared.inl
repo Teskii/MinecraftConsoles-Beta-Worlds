@@ -1855,13 +1855,17 @@ static void RADLINK gdraw_FilterQuad(GDrawRenderState *r, S32 x0, S32 y0, S32 x1
 
       if (r->blend_mode == GDRAW_BLEND_special) {
          blend_tex = (GDrawTexture *) get_color_rendertarget(gstats);
-         glBindTexture(GL_TEXTURE_2D, ((GDrawHandle *) blend_tex)->handle.tex.gl);
-         if (gdraw->cur != gdraw->frame)
-            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0,0, 0,0,gdraw->tpw,gdraw->tph);
-         else
-            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, gdraw->tx0 - gdraw->tx0p, gdraw->ty0 - gdraw->ty0p, gdraw->vx,gdraw->vy,gdraw->tw,gdraw->th);
+         if (blend_tex != nullptr) {
+            glBindTexture(GL_TEXTURE_2D, ((GDrawHandle *) blend_tex)->handle.tex.gl);
+            if (gdraw->cur != gdraw->frame)
+               glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0,0, 0,0,gdraw->tpw,gdraw->tph);
+            else
+               glCopyTexSubImage2D(GL_TEXTURE_2D, 0, gdraw->tx0 - gdraw->tx0p, gdraw->ty0 - gdraw->ty0p, gdraw->vx,gdraw->vy,gdraw->tw,gdraw->th);
 
-         set_texture(1, blend_tex);
+            set_texture(1, blend_tex);
+         } else {
+            set_texture(1, nullptr);
+         }
       }
 
       if (!set_render_state(r, GDRAW_vformat_v2tc2, &vvars, nullptr, gstats))

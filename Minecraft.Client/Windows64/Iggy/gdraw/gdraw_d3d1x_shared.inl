@@ -1823,22 +1823,26 @@ static void RADLINK gdraw_FilterQuad(GDrawRenderState *r, S32 x0, S32 y0, S32 x1
             S32 dx = 0, dy = 0;
             blend_tex = get_color_rendertarget(stats);
 
-            if (gdraw->cur != gdraw->frame)
-               box.right=gdraw->tpw, box.bottom=gdraw->tph;
-            else {
-               box.left=gdraw->vx, box.top=gdraw->vy, box.right=gdraw->vx+gdraw->tw, box.bottom=gdraw->vy+gdraw->th;
-               dx = gdraw->tx0 - gdraw->tx0p;
-               dy = gdraw->ty0 - gdraw->ty0p;
+            if (blend_tex != nullptr) {
+               if (gdraw->cur != gdraw->frame)
+                  box.right=gdraw->tpw, box.bottom=gdraw->tph;
+               else {
+                  box.left=gdraw->vx, box.top=gdraw->vy, box.right=gdraw->vx+gdraw->tw, box.bottom=gdraw->vy+gdraw->th;
+                  dx = gdraw->tx0 - gdraw->tx0p;
+                  dy = gdraw->ty0 - gdraw->ty0p;
+               }
+
+               d3d->CopySubresourceRegion(blend_tex->handle.tex.d3d, 0, dx, dy, 0,
+                  cur_rt_rsrc, 0, &box);
+
+               stats->nonzero_flags |= GDRAW_STATS_blits;
+               stats->num_blits += 1;
+               stats->num_blit_pixels += (box.right - box.left) * (box.bottom - box.top);
+
+               set_texture(1, (GDrawTexture *) blend_tex, false, GDRAW_WRAP_clamp);
+            } else {
+               set_texture(1, nullptr, false, GDRAW_WRAP_clamp);
             }
-
-            d3d->CopySubresourceRegion(blend_tex->handle.tex.d3d, 0, dx, dy, 0,
-               cur_rt_rsrc, 0, &box);
-
-            stats->nonzero_flags |= GDRAW_STATS_blits;
-            stats->num_blits += 1;
-            stats->num_blit_pixels += (box.right - box.left) * (box.bottom - box.top);
-
-            set_texture(1, (GDrawTexture *) blend_tex, false, GDRAW_WRAP_clamp);
          }
          
          cur_rt_rsrc->Release();
