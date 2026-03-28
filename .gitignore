@@ -414,3 +414,5 @@ build/
 tmp*/
 _server_asset_probe/
 server-data/
+/chatGuide/basic-full-block-guide.md
+/chatGuide
