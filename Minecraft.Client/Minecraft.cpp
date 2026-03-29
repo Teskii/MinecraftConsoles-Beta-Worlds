@@ -4242,6 +4242,7 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 {
 	EnterCriticalSection(&m_setLevelCS);
 	bool playerAdded = false;
+	bool restartAmbientAfterUnload = false;
 	this->cameraTargetPlayer = nullptr;
 
 	if(progressRenderer != nullptr)
@@ -4250,8 +4251,13 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 		this->progressRenderer->progressStage(-1);
 	}
 
-	// 4J-PB - since we now play music in the menu, just let it keep playing
-	//soundEngine->playStreaming(L"", 0, 0, 0, 0, 0);
+	// Keep menu ambient behavior intact, but do not let in-world jukebox/CD audio
+	// leak into the menus when the world is unloaded.
+	if (level == nullptr && soundEngine != nullptr && soundEngine->GetIsPlayingStreamingCDMusic())
+	{
+		restartAmbientAfterUnload = true;
+		soundEngine->playStreaming(L"", 0, 0, 0, 0, 0, false);
+	}
 
 	// 4J - stop update thread from processing this level, which blocks until it is safe to move on - will be re-enabled if we set the level to be non-nullptr
 	gameRenderer->DisableUpdateThread();
@@ -4460,6 +4466,11 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 			m_pendingLocalConnections[i] = nullptr;
 			localplayers[i] = nullptr;
 			localgameModes[i] = nullptr;
+		}
+
+		if (restartAmbientAfterUnload && soundEngine != nullptr)
+		{
+			soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
 		}
 	}
 

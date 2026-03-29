@@ -59,8 +59,14 @@ void RecordingItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, share
 {
 	eMinecraftColour color = getRarity(shared_ptr<ItemInstance>())->color;
 
+	const wchar_t *artist = L"C418";
+	if (recording == L"the one who's running the show")
+	{
+		artist = L"Gooseworx";
+	}
+
 	wchar_t text[256];
-	swprintf(text, 256, L"%ls %ls", L"C418 -", recording.c_str());
+	swprintf(text, 256, L"%ls - %ls", artist, recording.c_str());
 
 	lines->push_back(HtmlString(text, color));
 }

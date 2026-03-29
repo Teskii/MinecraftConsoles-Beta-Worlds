@@ -725,8 +725,23 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y , float z,
 
 	if(name.empty())
 	{
-		// music, or stop CD
+		// music, or stop CD/world streaming
 		m_StreamingAudioInfo.bIs3D=false;
+		SetIsPlayingStreamingCDMusic(false);
+		SetIsPlayingStreamingGameMusic(false);
+		SetIsPlayingEndMusic(false);
+		SetIsPlayingNetherMusic(false);
+
+		// Some callers pass bMusicDelay=false to mean "stop the current stream only"
+		// when leaving a world or switching dimensions. Win64 used to ignore that and
+		// immediately keep the music scheduler alive, which let jukebox audio leak out
+		// of the world.
+		if(!bMusicDelay)
+		{
+			m_musicID = -1;
+			m_iMusicDelay = 0;
+			return;
+		}
 
 		// we need a music id
 		// random delay of up to 3 minutes for music
@@ -1496,19 +1511,27 @@ void SoundEngine::playMusicUpdate()
 		break;
 	}
 
-	// check the status of the stream - this is for when a track completes rather than is stopped by the user action
-
 	if (m_musicStreamActive)
 	{
-		if (!ma_sound_is_playing(&m_musicStream) && ma_sound_at_end(&m_musicStream))
+		const bool isPlaying = ma_sound_is_playing(&m_musicStream);
+		const bool isAtEnd = ma_sound_at_end(&m_musicStream);
+
+		if (!isPlaying)
 		{
+			const bool wasGameMusic = GetIsPlayingStreamingGameMusic();
+
+			if (!isAtEnd)
+			{
+				app.DebugPrintf("SoundEngine::playMusicUpdate - stream stopped before at_end for music ID %d\n", m_musicID);
+			}
+
 			ma_sound_uninit(&m_musicStream);
 			m_musicStreamActive = false;
 
 			SetIsPlayingStreamingCDMusic(false);
 			SetIsPlayingStreamingGameMusic(false);
 
-			m_StreamState = eMusicStreamState_Completed;
+			m_StreamState = wasGameMusic ? eMusicStreamState_Completed : eMusicStreamState_Idle;
 		}
 	}
 }
