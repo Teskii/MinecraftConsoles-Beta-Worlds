@@ -38,6 +38,9 @@
 #include "..\Minecraft.World\Socket.h"
 #include "Minecraft.h"
 #include "ProgressRenderer.h"
+#ifdef _WINDOWS64
+#include "Windows64\Windows64_Xuid.h"
+#endif
 #include "LevelRenderer.h"
 #include "Options.h"
 #include "MinecraftServer.h"
@@ -2001,6 +2004,13 @@ void ClientConnection::handlePreLogin(shared_ptr<PreLoginPacket> packet)
 {
 //	printf("Client: handlePreLogin\n");
 #if 1
+#ifdef _WINDOWS64
+	if (!g_NetworkManager.IsHost() && Win64Xuid::SessionResolvedXuidStorage() == INVALID_XUID)
+	{
+		const PlayerUID persistentXuid = Win64Xuid::ResolvePersistentXuid();
+		Win64Xuid::SetSessionResolvedXuid(Win64Xuid::DeriveJoinSessionXuid(persistentXuid));
+	}
+#endif
 	// 4J - Check that we can play with all the players already in the game who have Friends-Only UGC set
 	BOOL canPlay = TRUE;
 	BOOL canPlayLocal = TRUE;

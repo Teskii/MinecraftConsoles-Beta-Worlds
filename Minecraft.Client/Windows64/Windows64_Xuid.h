@@ -148,6 +148,47 @@ namespace Win64Xuid
 		return x ^ (x >> 31);
 	}
 
+	inline PlayerUID& SessionResolvedXuidStorage()
+	{
+		static PlayerUID s_sessionResolvedXuid = INVALID_XUID;
+		return s_sessionResolvedXuid;
+	}
+
+	inline void SetSessionResolvedXuid(PlayerUID xuid)
+	{
+		SessionResolvedXuidStorage() = xuid;
+	}
+
+	inline void ClearSessionResolvedXuid()
+	{
+		SessionResolvedXuidStorage() = INVALID_XUID;
+	}
+
+	inline PlayerUID DeriveJoinSessionXuid(PlayerUID baseXuid)
+	{
+		uint64_t seed = static_cast<uint64_t>(baseXuid);
+		seed ^= static_cast<uint64_t>(GetCurrentProcessId()) << 32;
+		seed ^= static_cast<uint64_t>(GetTickCount64());
+		seed ^= static_cast<uint64_t>(reinterpret_cast<size_t>(&seed));
+
+		uint64_t raw = Mix64(seed);
+		raw |= 0x8000000000000000ULL;
+
+		PlayerUID xuid = static_cast<PlayerUID>(raw);
+		if (!IsPersistedUidValid(xuid))
+		{
+			raw ^= 0x0100000000000001ULL;
+			xuid = static_cast<PlayerUID>(raw);
+		}
+
+		if (!IsPersistedUidValid(xuid))
+		{
+			xuid = static_cast<PlayerUID>(0xD15EA5E000000001ULL ^ (seed & 0x0000FFFFFFFFFFFFULL));
+		}
+
+		return xuid;
+	}
+
 	inline PlayerUID GeneratePersistentUid()
 	{
 		// Avoid rand_s dependency: mix several Win64 runtime values into a 64-bit seed.
@@ -211,6 +252,10 @@ namespace Win64Xuid
 
 	inline PlayerUID ResolvePersistentXuid()
 	{
+		PlayerUID sessionXuid = SessionResolvedXuidStorage();
+		if (sessionXuid != INVALID_XUID)
+			return sessionXuid;
+
 		// Process-local cache: uid.dat is immutable during runtime and this path is hot.
 		static bool s_cached = false;
 		static PlayerUID s_xuid = INVALID_XUID;

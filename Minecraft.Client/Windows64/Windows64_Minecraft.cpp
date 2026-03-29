@@ -123,6 +123,7 @@ static WINDOWPLACEMENT g_wpPrev = { sizeof(g_wpPrev) };
 struct Win64LaunchOptions
 {
 	int screenMode;
+	bool explicitName;
 	bool fullscreen;
 };
 
@@ -208,6 +209,7 @@ static Win64LaunchOptions ParseLaunchOptions()
 {
 	Win64LaunchOptions options = {};
 	options.screenMode = 0;
+	options.explicitName = false;
 
 	g_Win64MultiplayerJoin = false;
 	g_Win64MultiplayerPort = WIN64_NET_DEFAULT_PORT;
@@ -228,6 +230,7 @@ static Win64LaunchOptions ParseLaunchOptions()
 		if (_wcsicmp(argv[i], L"-name") == 0 && (i + 1) < argc)
 		{
 			CopyWideArgToAnsi(argv[++i], g_Win64Username, sizeof(g_Win64Username));
+			options.explicitName = true;
 		}
 		else if (_wcsicmp(argv[i], L"-ip") == 0 && (i + 1) < argc)
 		{
@@ -251,6 +254,34 @@ static Win64LaunchOptions ParseLaunchOptions()
 
 	LocalFree(argv);
 	return options;
+}
+
+static void ApplyImplicitWin64Username(PlayerUID resolvedClientXuid, bool isJoinClient, bool explicitName)
+{
+	if (explicitName)
+		return;
+
+	if (g_Win64Username[0] == 0)
+	{
+		strncpy_s(g_Win64Username, sizeof(g_Win64Username), "Player", _TRUNCATE);
+	}
+
+	if (!isJoinClient || resolvedClientXuid == INVALID_XUID)
+		return;
+
+	char baseName[sizeof(g_Win64Username)] = {};
+	strncpy_s(baseName, sizeof(baseName), g_Win64Username, _TRUNCATE);
+
+	char suffix[8] = {};
+	_snprintf_s(suffix, sizeof(suffix), _TRUNCATE, "-%04X",
+		static_cast<unsigned int>(resolvedClientXuid & 0xFFFFULL));
+
+	const size_t maxVisibleLen = sizeof(g_Win64Username) - 1;
+	const size_t suffixLen = strlen(suffix);
+	const size_t baseLen = (suffixLen < maxVisibleLen) ? (maxVisibleLen - suffixLen) : 0;
+
+	_snprintf_s(g_Win64Username, sizeof(g_Win64Username), _TRUNCATE, "%.*s%s",
+		static_cast<int>(baseLen), baseName, suffix);
 }
 
 void DefineActions(void)
@@ -1358,14 +1389,20 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	ApplyScreenMode(launchOptions.screenMode);
 
 	// Ensure uid.dat exists from startup (before any multiplayer/login path).
-	Win64Xuid::ResolvePersistentXuid();
-
-	// If no username, let's fall back
-	if (g_Win64Username[0] == 0)
+	// Joining clients get a per-process XUID override so copied Win64 installs
+	// can connect to the same LAN game without colliding.
+	PlayerUID resolvedClientXuid = Win64Xuid::ResolvePersistentXuid();
+	if (g_Win64MultiplayerJoin)
 	{
-        // Default username will be "Player"
-        strncpy_s(g_Win64Username, sizeof(g_Win64Username), "Player", _TRUNCATE);
+		resolvedClientXuid = Win64Xuid::DeriveJoinSessionXuid(resolvedClientXuid);
+		Win64Xuid::SetSessionResolvedXuid(resolvedClientXuid);
 	}
+	else
+	{
+		Win64Xuid::ClearSessionResolvedXuid();
+	}
+
+	ApplyImplicitWin64Username(resolvedClientXuid, g_Win64MultiplayerJoin, launchOptions.explicitName);
 
 	MultiByteToWideChar(CP_ACP, 0, g_Win64Username, -1, g_Win64UsernameW, 17);
 

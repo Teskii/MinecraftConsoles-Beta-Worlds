@@ -2256,6 +2256,9 @@ Can also be used for low-level lighting.</value>
   <data name="IDS_ITEM_RECORD_15">
     <value>Music Disc - "droopy likes ricochet"</value>
   </data>
+  <data name="IDS_ITEM_RECORD_16">
+    <value>Music Disc - "the one who's running the show"</value>
+  </data>
   <data name="IDS_ITEM_SHEARS">
     <value>Shears</value>
   </data>

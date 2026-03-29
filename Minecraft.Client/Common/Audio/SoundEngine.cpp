@@ -192,7 +192,8 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"where_are_we_now",
 	"droopy_likes_your_face",
 	"dry_hopes",
-	"droopy_likes_ricochet"
+	"droopy_likes_ricochet",
+	"the_one_who's_running_the_show"
 };
 
 std::vector<MiniAudioSound*> m_activeSounds;

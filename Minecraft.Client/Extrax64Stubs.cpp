@@ -362,6 +362,7 @@ void IQNet::HostGame()
 {
 	_iQNetStubState = QNET_STATE_SESSION_STARTING;
 	s_isHosting = true;
+	Win64Xuid::ClearSessionResolvedXuid();
 	// Host slot keeps legacy XUID so old host player data remains addressable.
 	m_player[0].m_resolvedXuid = Win64Xuid::GetLegacyEmbeddedHostXuid();
 }
@@ -384,6 +385,7 @@ void IQNet::EndGame()
 {
 	_iQNetStubState = QNET_STATE_IDLE;
 	s_isHosting = false;
+	Win64Xuid::ClearSessionResolvedXuid();
 	s_playerCount = 1;
 	for (int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++)
 	{

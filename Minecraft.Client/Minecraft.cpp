@@ -2831,7 +2831,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 							if (!bUseItemOn && itemInstance!=nullptr)
 							{
 								int iID=itemInstance->getItem()->id;
-								if ( (iID>=Item::record_01_Id) && (iID<=Item::record_15_Id) )
+								if ( (iID>=Item::record_01_Id) && (iID<=Item::record_16_Id) )
 								{
 									*piUse=IDS_TOOLTIPS_PLAY;
 								}

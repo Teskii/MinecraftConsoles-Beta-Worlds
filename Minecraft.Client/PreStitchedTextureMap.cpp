@@ -587,6 +587,7 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(15,		12,	L"record_droopy likes your face")
 		ADD_ICON(15,		13,	L"record_dry hopes")
 		ADD_ICON(15,		14,	L"record_droopy likes ricochet")
+		ADD_ICON(15,		15,	L"record_the one who's running the show")
 
 		// Special cases
 		ClockTexture *dataClock = new ClockTexture();

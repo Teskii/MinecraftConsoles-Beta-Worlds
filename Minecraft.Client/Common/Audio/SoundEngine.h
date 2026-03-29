@@ -97,6 +97,7 @@ enum eMUSICFILES
 	eStream_CD_13,
 	eStream_CD_14,
 	eStream_CD_15,
+	eStream_CD_16,
 	eStream_Max,
 };
 

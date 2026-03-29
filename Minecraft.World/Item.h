@@ -373,6 +373,7 @@ public:
 	static Item *record_13;
 	static Item *record_14;
 	static Item *record_15;
+	static Item *record_16;
 
 	// TU9
 	static Item *fireball;
@@ -581,6 +582,7 @@ public:
 	static const int record_13_Id			= 2268;
 	static const int record_14_Id			= 2269;
 	static const int record_15_Id			= 2270;
+	static const int record_16_Id			= 2271;
 
 	// TU9
 	static const int fireball_Id			 = 385;

@@ -160,7 +160,8 @@ void Creeper::die(DamageSource *source)
 			Item::record_12_Id,
 			Item::record_13_Id,
 			Item::record_14_Id,
-			Item::record_15_Id
+			Item::record_15_Id,
+			Item::record_16_Id
 		};
 		int recordId = recordIdList[random->nextInt(sizeof(recordIdList) / sizeof(recordIdList[0]))];
 		spawnAtLocation(recordId, 1);
