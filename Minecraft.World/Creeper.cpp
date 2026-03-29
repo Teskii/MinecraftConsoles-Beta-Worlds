@@ -144,7 +144,25 @@ void Creeper::die(DamageSource *source)
 
 	if ( source->getEntity() != nullptr && source->getEntity()->instanceof(eTYPE_SKELETON) )
 	{
-		int recordId = Item::record_01_Id + random->nextInt(Item::record_12_Id - Item::record_01_Id + 1);
+		static const int recordIdList[] =
+		{
+			Item::record_01_Id,
+			Item::record_02_Id,
+			Item::record_03_Id,
+			Item::record_04_Id,
+			Item::record_05_Id,
+			Item::record_06_Id,
+			Item::record_07_Id,
+			Item::record_08_Id,
+			Item::record_09_Id,
+			Item::record_10_Id,
+			Item::record_11_Id,
+			Item::record_12_Id,
+			Item::record_13_Id,
+			Item::record_14_Id,
+			Item::record_15_Id
+		};
+		int recordId = recordIdList[random->nextInt(sizeof(recordIdList) / sizeof(recordIdList[0]))];
 		spawnAtLocation(recordId, 1);
 	}
 

@@ -370,6 +370,9 @@ public:
 	static Item *record_10;
 	static Item *record_11;
 	static Item *record_12;
+	static Item *record_13;
+	static Item *record_14;
+	static Item *record_15;
 
 	// TU9
 	static Item *fireball;
@@ -575,6 +578,9 @@ public:
 
 	// 4J-PB - this one isn't playable in the PC game, but is fine in ours
 	static const int record_08_Id			= 2267;
+	static const int record_13_Id			= 2268;
+	static const int record_14_Id			= 2269;
+	static const int record_15_Id			= 2270;
 
 	// TU9
 	static const int fireball_Id			 = 385;

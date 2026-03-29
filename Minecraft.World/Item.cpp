@@ -172,6 +172,9 @@ Item *Item::record_09 = nullptr;
 Item *Item::record_10 = nullptr;
 Item *Item::record_11 = nullptr;
 Item *Item::record_12 = nullptr;
+Item *Item::record_13 = nullptr;
+Item *Item::record_14 = nullptr;
+Item *Item::record_15 = nullptr;
 
 ShearsItem *Item::shears = nullptr;
 
@@ -450,6 +453,9 @@ void Item::staticCtor()
 	Item::record_11 =			( new RecordingItem(2009, L"ward") )								->setIconName(L"record")->setDescriptionId(IDS_ITEM_RECORD_10)->setUseDescriptionId(IDS_DESC_RECORD);
 	Item::record_12 =			( new RecordingItem(2010, L"11") )									->setIconName(L"record")->setDescriptionId(IDS_ITEM_RECORD_11)->setUseDescriptionId(IDS_DESC_RECORD);
 	Item::record_08 =			( new RecordingItem(2011, L"where are we now") )					->setIconName(L"record")->setDescriptionId(IDS_ITEM_RECORD_12)->setUseDescriptionId(IDS_DESC_RECORD);
+	Item::record_13 =			( new RecordingItem(2012, L"droopy likes your face") )				->setIconName(L"record")->setDescriptionId(IDS_ITEM_RECORD_13)->setUseDescriptionId(IDS_DESC_RECORD);
+	Item::record_14 =			( new RecordingItem(2013, L"dry hopes") )							->setIconName(L"record")->setDescriptionId(IDS_ITEM_RECORD_14)->setUseDescriptionId(IDS_DESC_RECORD);
+	Item::record_15 =			( new RecordingItem(2014, L"droopy likes ricochet") )				->setIconName(L"record")->setDescriptionId(IDS_ITEM_RECORD_15)->setUseDescriptionId(IDS_DESC_RECORD);
 
 	// TU9
 	// putting the fire charge in as a torch, so that it stacks without being near the middle of the selection boxes
@@ -1131,6 +1137,9 @@ const int Item::record_10_Id		    ;
 const int Item::record_11_Id		    ;
 const int Item::record_12_Id			;
 const int Item::record_08_Id			;
+const int Item::record_13_Id			;
+const int Item::record_14_Id			;
+const int Item::record_15_Id			;
 const int Item::fireball_Id			;
 const int Item::itemFrame_Id			;
 const int Item::netherbrick_Id		;

@@ -114,6 +114,21 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"hal4",
 	"nuance1",
 	"nuance2",
+	//Unused Alpha tracks   
+	"eleven",
+	"one_last_game",
+	"excuse",
+	"equinoxe",
+	"fern",
+	//ONE album by c418
+	
+	"imposter_syndrome",
+	"pr_department",
+	"for_the_sake_of_making_games",
+	"wooden_love",
+	//Seven Years of Server Data Album by c418
+	"breezy",
+	"mob_fest",
 
 #ifndef _XBOX
 	"creative1",
@@ -126,6 +141,24 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"menu2",
 	"menu3",
 	"menu4",
+	//Unused Alpha Tracks
+	"door",
+	"chris",
+	//Unused Beta Tracks
+	"ki",
+	"kyoto",
+	"flake",
+	
+	//Volume Gamma Album   
+	"nordic_beach",
+	"cobblestone",
+	//One Album by c418
+	"wooden_love",
+	"cliffside_hinsen",
+	//Seven Years of Server Data Album by c418
+	"atempause",
+	"another_weird_ambient_tune",
+	"BGC418",
 #endif
 
 	"piano1",
@@ -137,6 +170,8 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"nether2",
 	"nether3",
 	"nether4",
+	"nether5",
+	"mau5cave"
 
 	// The End
 	"the_end_dragon_alive",
@@ -154,7 +189,10 @@ const char *SoundEngine::m_szStreamFileA[eStream_Max]=
 	"stal",
 	"strad",
 	"ward",
-	"where_are_we_now"
+	"where_are_we_now",
+	"droopy_likes_your_face",
+	"dry_hopes",
+	"droopy_likes_ricochet"
 };
 
 std::vector<MiniAudioSound*> m_activeSounds;
@@ -845,9 +883,10 @@ int SoundEngine::getMusicID(const wstring& name)
 {
 	int iCD=0;
 	char *SoundName = (char *)ConvertSoundPathToName(name,true);
+	const size_t cdCount = (eStream_Max - eStream_CD_1);
 
 	// 4J-PB - these will always be the game cds, so use the m_szStreamFileA for this
-	for(size_t i=0;i<12;i++)
+	for(size_t i=0;i<cdCount;i++)
 	{
 		if(strcmp(SoundName,m_szStreamFileA[i+eStream_CD_1])==0)
 		{

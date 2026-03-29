@@ -370,6 +370,9 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM(Item::record_10_Id)
 		ITEM(Item::record_11_Id)
 		ITEM(Item::record_12_Id)
+		ITEM(Item::record_13_Id)
+		ITEM(Item::record_14_Id)
+		ITEM(Item::record_15_Id)
 
 		BuildFirework(list, FireworksItem::TYPE_SMALL, DyePowderItem::LIGHT_BLUE, 1, true, false);
 		BuildFirework(list, FireworksItem::TYPE_CREEPER, DyePowderItem::GREEN, 2, false, false);

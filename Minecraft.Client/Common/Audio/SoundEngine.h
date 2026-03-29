@@ -23,6 +23,22 @@ enum eMUSICFILES
 	eStream_Overworld_hal4,
 	eStream_Overworld_nuance1,
 	eStream_Overworld_nuance2,
+	//Unused Alpha tracks   
+	eStream_Overworld_Eleven,
+	eStream_Overworld_One_Last_Game,
+	eStream_Overworld_Excuse,
+	eStream_Overworld_equinoxe,
+	eStream_Overworld_fern,
+	//ONE album by c418
+	
+	eStream_Overworld_imposter_syndrome, 
+	eStream_Overworld_Pr_Department, 
+	eStream_Overworld_for_the_sake_of_making_games,
+	
+	eStream_Overworld_wooden_love,
+	//Seven Years of Server Data Album by c418
+	eStream_Overworld_breezy,
+	eStream_Overworld_mob_fest,
 #ifndef _XBOX
 	// Add the new music tracks
 	eStream_Overworld_Creative1,
@@ -35,6 +51,22 @@ enum eMUSICFILES
 	eStream_Overworld_Menu2,
 	eStream_Overworld_Menu3,
 	eStream_Overworld_Menu4,
+	//Unused Alpha Tracks
+	eStream_Overworld_Door,
+	eStream_Overworld_Chris,
+	//Unused Beta Tracks
+	eStream_Overworld_Ki,
+	eStream_Overworld_Kyoto,
+	eStream_Overworld_flake,
+	//Volume Gamma Album
+	eStream_Overworld_nordic_beach,
+	eStream_Overworld_cobblestone,
+	//One Album by c418
+	eStream_Overworld_cliffside_hinsen,
+	//Seven Years of Server Data Album by c418
+	eStream_Overworld_atempause,
+	eStream_Overworld_another_weird_ambient_tune,
+	eStream_Overworld_BGC418,
 #endif
 	eStream_Overworld_piano1,
 	eStream_Overworld_piano2,
@@ -44,6 +76,9 @@ enum eMUSICFILES
 	eStream_Nether2,
 	eStream_Nether3,
 	eStream_Nether4,
+	//extra nether songs
+	eStream_nether5,
+	eStream_mau5cave,
 	// The End
 	eStream_end_dragon,
 	eStream_end_end,
@@ -59,6 +94,9 @@ enum eMUSICFILES
 	eStream_CD_10,
 	eStream_CD_11,
 	eStream_CD_12,
+	eStream_CD_13,
+	eStream_CD_14,
+	eStream_CD_15,
 	eStream_Max,
 };
 

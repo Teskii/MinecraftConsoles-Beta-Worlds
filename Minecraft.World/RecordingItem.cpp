@@ -21,6 +21,17 @@ Icon *RecordingItem::getIcon(int auxValue)
 	return icon;
 }
 
+wstring RecordingItem::getHoverName(shared_ptr<ItemInstance> itemInstance)
+{
+	wstring hoverName = Item::getHoverName(itemInstance);
+	if (!hoverName.empty())
+	{
+		return hoverName;
+	}
+
+	return L"Music Disc - \"" + recording + L"\"";
+}
+
 bool RecordingItem::useOn(shared_ptr<ItemInstance> itemInstance, shared_ptr<Player> player, Level *level, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly)
 {
 	// 4J-PB - Adding a test only version to allow tooltips to be displayed
