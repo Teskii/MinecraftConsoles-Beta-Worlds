@@ -330,8 +330,9 @@ void PreStitchedTextureMap::loadUVs()
 
 	if(iconType != Icon::TYPE_TERRAIN)
 	{
-		float horizRatio = 1.0f/16.0f;
-		float vertRatio = 1.0f/16.0f;
+		// Item atlases are expanded to 32x32 tiles so we have room for many more custom items/discs.
+		float horizRatio = 1.0f/32.0f;
+		float vertRatio = 1.0f/32.0f;
 
 		ADD_ICON(0,		0,	L"helmetCloth")
 		ADD_ICON(0,		1,	L"helmetChain")

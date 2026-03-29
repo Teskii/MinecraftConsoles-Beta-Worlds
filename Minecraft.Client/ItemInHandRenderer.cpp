@@ -26,6 +26,12 @@ int ItemInHandRenderer::listItem = -1;
 int ItemInHandRenderer::listTerrain = -1;
 int ItemInHandRenderer::listGlint = -1;
 
+namespace
+{
+	// Item atlases were expanded to 512x512 to make room for many more custom items/discs.
+	static const float ITEM_ATLAS_SIZE = 512.0f;
+}
+
 ItemInHandRenderer::ItemInHandRenderer(Minecraft *minecraft, bool optimisedMinimap)
 {
 	// 4J - added
@@ -52,10 +58,10 @@ ItemInHandRenderer::ItemInHandRenderer(Minecraft *minecraft, bool optimisedMinim
 		for( int yp = 0; yp < 16; yp++ )
 			for( int xp = 0; xp < 16; xp++ )
 			{
-				float u = (15-xp) / 256.0f;
-				float v = (15-yp) / 256.0f;
-				u += 0.5f / 256.0f;
-				v += 0.5f / 256.0f;
+				float u = (15-xp) / ITEM_ATLAS_SIZE;
+				float v = (15-yp) / ITEM_ATLAS_SIZE;
+				u += 0.5f / ITEM_ATLAS_SIZE;
+				v += 0.5f / ITEM_ATLAS_SIZE;
 				float x0 = xp / 16.0f;
 				float x1 = x0 + 1.0f/16.0f;
 				float y0 = yp / 16.0f;
