@@ -1,0 +1,487 @@
+{
+  "package": "C:\\Users\\diego\\OneDrive\\Desktop\\MinecraftDev\\MinecraftConsoles\\MinecraftConsoles-Beta-Worlds\\TU4_ISO\\extracted\\TU4_ISO\\$TitleUpdate\\584111F7\\tu00000001_00000000",
+  "type": "PIRS",
+  "entry_count": 48,
+  "entries": [
+    {
+      "index": 0,
+      "name": "default.xexp",
+      "is_dir": false,
+      "parent_id": 65535,
+      "first_block": 1,
+      "block_count": 1212,
+      "size": 4962304,
+      "relative_path": "default.xexp"
+    },
+    {
+      "index": 1,
+      "name": "res",
+      "is_dir": true,
+      "parent_id": 65535,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res"
+    },
+    {
+      "index": 2,
+      "name": "1_2_2",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2"
+    },
+    {
+      "index": 3,
+      "name": "audio",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/audio"
+    },
+    {
+      "index": 4,
+      "name": "font",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/font"
+    },
+    {
+      "index": 5,
+      "name": "GameRules",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/GameRules"
+    },
+    {
+      "index": 6,
+      "name": "TMS",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/TMS"
+    },
+    {
+      "index": 7,
+      "name": "armor",
+      "is_dir": true,
+      "parent_id": 2,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/armor"
+    },
+    {
+      "index": 8,
+      "name": "gui",
+      "is_dir": true,
+      "parent_id": 2,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/gui"
+    },
+    {
+      "index": 9,
+      "name": "item",
+      "is_dir": true,
+      "parent_id": 2,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/item"
+    },
+    {
+      "index": 10,
+      "name": "misc",
+      "is_dir": true,
+      "parent_id": 2,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/misc"
+    },
+    {
+      "index": 11,
+      "name": "mob",
+      "is_dir": true,
+      "parent_id": 2,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/mob"
+    },
+    {
+      "index": 12,
+      "name": "terrain.png",
+      "is_dir": false,
+      "parent_id": 2,
+      "first_block": 1213,
+      "block_count": 22,
+      "size": 88622,
+      "relative_path": "res/1_2_2/terrain.png"
+    },
+    {
+      "index": 13,
+      "name": "terrain_MipmapLevel2.png",
+      "is_dir": false,
+      "parent_id": 2,
+      "first_block": 1235,
+      "block_count": 7,
+      "size": 26343,
+      "relative_path": "res/1_2_2/terrain_MipmapLevel2.png"
+    },
+    {
+      "index": 14,
+      "name": "terrain_MipmapLevel3.png",
+      "is_dir": false,
+      "parent_id": 2,
+      "first_block": 1242,
+      "block_count": 3,
+      "size": 10024,
+      "relative_path": "res/1_2_2/terrain_MipmapLevel3.png"
+    },
+    {
+      "index": 15,
+      "name": "power.png",
+      "is_dir": false,
+      "parent_id": 7,
+      "first_block": 1245,
+      "block_count": 1,
+      "size": 1800,
+      "relative_path": "res/1_2_2/armor/power.png"
+    },
+    {
+      "index": 16,
+      "name": "items.png",
+      "is_dir": false,
+      "parent_id": 8,
+      "first_block": 1246,
+      "block_count": 6,
+      "size": 23939,
+      "relative_path": "res/1_2_2/gui/items.png"
+    },
+    {
+      "index": 17,
+      "name": "book.png",
+      "is_dir": false,
+      "parent_id": 9,
+      "first_block": 1252,
+      "block_count": 1,
+      "size": 571,
+      "relative_path": "res/1_2_2/item/book.png"
+    },
+    {
+      "index": 18,
+      "name": "explosion.png",
+      "is_dir": false,
+      "parent_id": 10,
+      "first_block": 1253,
+      "block_count": 1,
+      "size": 1614,
+      "relative_path": "res/1_2_2/misc/explosion.png"
+    },
+    {
+      "index": 19,
+      "name": "footprint.png",
+      "is_dir": false,
+      "parent_id": 10,
+      "first_block": 1254,
+      "block_count": 1,
+      "size": 151,
+      "relative_path": "res/1_2_2/misc/footprint.png"
+    },
+    {
+      "index": 20,
+      "name": "glint.png",
+      "is_dir": false,
+      "parent_id": 10,
+      "first_block": 1255,
+      "block_count": 1,
+      "size": 418,
+      "relative_path": "res/1_2_2/misc/glint.png"
+    },
+    {
+      "index": 21,
+      "name": "mapicons.png",
+      "is_dir": false,
+      "parent_id": 10,
+      "first_block": 1256,
+      "block_count": 1,
+      "size": 723,
+      "relative_path": "res/1_2_2/misc/mapicons.png"
+    },
+    {
+      "index": 22,
+      "name": "particlefield.png",
+      "is_dir": false,
+      "parent_id": 10,
+      "first_block": 1257,
+      "block_count": 6,
+      "size": 23124,
+      "relative_path": "res/1_2_2/misc/particlefield.png"
+    },
+    {
+      "index": 23,
+      "name": "tunnel.png",
+      "is_dir": false,
+      "parent_id": 10,
+      "first_block": 1263,
+      "block_count": 11,
+      "size": 43306,
+      "relative_path": "res/1_2_2/misc/tunnel.png"
+    },
+    {
+      "index": 24,
+      "name": "enderdragon",
+      "is_dir": true,
+      "parent_id": 11,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/mob/enderdragon"
+    },
+    {
+      "index": 25,
+      "name": "enderman_eyes.png",
+      "is_dir": false,
+      "parent_id": 11,
+      "first_block": 1274,
+      "block_count": 1,
+      "size": 213,
+      "relative_path": "res/1_2_2/mob/enderman_eyes.png"
+    },
+    {
+      "index": 26,
+      "name": "redcow.png",
+      "is_dir": false,
+      "parent_id": 11,
+      "first_block": 1275,
+      "block_count": 1,
+      "size": 1956,
+      "relative_path": "res/1_2_2/mob/redcow.png"
+    },
+    {
+      "index": 27,
+      "name": "snowman.png",
+      "is_dir": false,
+      "parent_id": 11,
+      "first_block": 1276,
+      "block_count": 1,
+      "size": 1081,
+      "relative_path": "res/1_2_2/mob/snowman.png"
+    },
+    {
+      "index": 28,
+      "name": "villager",
+      "is_dir": true,
+      "parent_id": 11,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/1_2_2/mob/villager"
+    },
+    {
+      "index": 29,
+      "name": "zombie.png",
+      "is_dir": false,
+      "parent_id": 11,
+      "first_block": 1277,
+      "block_count": 1,
+      "size": 1618,
+      "relative_path": "res/1_2_2/mob/zombie.png"
+    },
+    {
+      "index": 30,
+      "name": "beam.png",
+      "is_dir": false,
+      "parent_id": 24,
+      "first_block": 1278,
+      "block_count": 1,
+      "size": 3542,
+      "relative_path": "res/1_2_2/mob/enderdragon/beam.png"
+    },
+    {
+      "index": 31,
+      "name": "ender.png",
+      "is_dir": false,
+      "parent_id": 24,
+      "first_block": 1279,
+      "block_count": 3,
+      "size": 10990,
+      "relative_path": "res/1_2_2/mob/enderdragon/ender.png"
+    },
+    {
+      "index": 32,
+      "name": "ender_eyes.png",
+      "is_dir": false,
+      "parent_id": 24,
+      "first_block": 1282,
+      "block_count": 1,
+      "size": 541,
+      "relative_path": "res/1_2_2/mob/enderdragon/ender_eyes.png"
+    },
+    {
+      "index": 33,
+      "name": "butcher.png",
+      "is_dir": false,
+      "parent_id": 28,
+      "first_block": 1283,
+      "block_count": 1,
+      "size": 1390,
+      "relative_path": "res/1_2_2/mob/villager/butcher.png"
+    },
+    {
+      "index": 34,
+      "name": "farmer.png",
+      "is_dir": false,
+      "parent_id": 28,
+      "first_block": 1284,
+      "block_count": 1,
+      "size": 1655,
+      "relative_path": "res/1_2_2/mob/villager/farmer.png"
+    },
+    {
+      "index": 35,
+      "name": "librarian.png",
+      "is_dir": false,
+      "parent_id": 28,
+      "first_block": 1285,
+      "block_count": 1,
+      "size": 1935,
+      "relative_path": "res/1_2_2/mob/villager/librarian.png"
+    },
+    {
+      "index": 36,
+      "name": "priest.png",
+      "is_dir": false,
+      "parent_id": 28,
+      "first_block": 1286,
+      "block_count": 1,
+      "size": 1933,
+      "relative_path": "res/1_2_2/mob/villager/priest.png"
+    },
+    {
+      "index": 37,
+      "name": "smith.png",
+      "is_dir": false,
+      "parent_id": 28,
+      "first_block": 1287,
+      "block_count": 1,
+      "size": 1383,
+      "relative_path": "res/1_2_2/mob/villager/smith.png"
+    },
+    {
+      "index": 38,
+      "name": "villager.png",
+      "is_dir": false,
+      "parent_id": 28,
+      "first_block": 1288,
+      "block_count": 1,
+      "size": 1947,
+      "relative_path": "res/1_2_2/mob/villager/villager.png"
+    },
+    {
+      "index": 39,
+      "name": "additional.xsb",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 1289,
+      "block_count": 1,
+      "size": 766,
+      "relative_path": "res/audio/additional.xsb"
+    },
+    {
+      "index": 40,
+      "name": "additional.xwb",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 1290,
+      "block_count": 132,
+      "size": 540672,
+      "relative_path": "res/audio/additional.xwb"
+    },
+    {
+      "index": 41,
+      "name": "AdditionalMusic.xwb",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 1422,
+      "block_count": 5049,
+      "size": 20678656,
+      "relative_path": "res/audio/AdditionalMusic.xwb"
+    },
+    {
+      "index": 42,
+      "name": "Minecraft.xgs",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 6471,
+      "block_count": 1,
+      "size": 488,
+      "relative_path": "res/audio/Minecraft.xgs"
+    },
+    {
+      "index": 43,
+      "name": "minecraft.xsb",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 6472,
+      "block_count": 3,
+      "size": 9340,
+      "relative_path": "res/audio/minecraft.xsb"
+    },
+    {
+      "index": 44,
+      "name": "Mojangles_11.png",
+      "is_dir": false,
+      "parent_id": 4,
+      "first_block": 6475,
+      "block_count": 3,
+      "size": 11455,
+      "relative_path": "res/font/Mojangles_11.png"
+    },
+    {
+      "index": 45,
+      "name": "Mojangles_7.png",
+      "is_dir": false,
+      "parent_id": 4,
+      "first_block": 6478,
+      "block_count": 2,
+      "size": 5733,
+      "relative_path": "res/font/Mojangles_7.png"
+    },
+    {
+      "index": 46,
+      "name": "Tutorial.xzp",
+      "is_dir": false,
+      "parent_id": 5,
+      "first_block": 6480,
+      "block_count": 21,
+      "size": 82982,
+      "relative_path": "res/GameRules/Tutorial.xzp"
+    },
+    {
+      "index": 47,
+      "name": "TMSFiles.xzp",
+      "is_dir": false,
+      "parent_id": 6,
+      "first_block": 6501,
+      "block_count": 884,
+      "size": 3618233,
+      "relative_path": "res/TMS/TMSFiles.xzp"
+    }
+  ]
+}

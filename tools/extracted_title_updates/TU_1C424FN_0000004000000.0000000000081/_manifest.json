@@ -1,0 +1,77 @@
+{
+  "package": "C:\\Users\\diego\\Downloads\\TU_1C424FN_0000004000000.0000000000081",
+  "type": "LIVE",
+  "entry_count": 7,
+  "entries": [
+    {
+      "index": 0,
+      "name": "default.xexp",
+      "is_dir": false,
+      "parent_id": 65535,
+      "first_block": 1,
+      "block_count": 732,
+      "size": 2996224,
+      "relative_path": "default.xexp"
+    },
+    {
+      "index": 1,
+      "name": "res",
+      "is_dir": true,
+      "parent_id": 65535,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res"
+    },
+    {
+      "index": 2,
+      "name": "armor",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/armor"
+    },
+    {
+      "index": 3,
+      "name": "font",
+      "is_dir": true,
+      "parent_id": 1,
+      "first_block": 0,
+      "block_count": 0,
+      "size": 0,
+      "relative_path": "res/font"
+    },
+    {
+      "index": 4,
+      "name": "power.png",
+      "is_dir": false,
+      "parent_id": 2,
+      "first_block": 733,
+      "block_count": 1,
+      "size": 1800,
+      "relative_path": "res/armor/power.png"
+    },
+    {
+      "index": 5,
+      "name": "Mojangles_11.png",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 734,
+      "block_count": 3,
+      "size": 11484,
+      "relative_path": "res/font/Mojangles_11.png"
+    },
+    {
+      "index": 6,
+      "name": "Mojangles_7.png",
+      "is_dir": false,
+      "parent_id": 3,
+      "first_block": 737,
+      "block_count": 2,
+      "size": 5512,
+      "relative_path": "res/font/Mojangles_7.png"
+    }
+  ]
+}
