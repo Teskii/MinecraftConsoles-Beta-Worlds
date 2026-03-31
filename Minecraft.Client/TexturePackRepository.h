@@ -10,10 +10,12 @@ public:
 	static const DWORD DEFAULT_TEXTURE_PACK_ID = 0;
 	static const DWORD FOLDER_TEST_TEXTURE_PACK_ID = 1;
 	static const DWORD DLC_TEST_TEXTURE_PACK_ID = 2;
+	static const DWORD TU4_TEXTURE_PACK_ID = 3;
 private:
 	static TexturePack *DEFAULT_TEXTURE_PACK;
 	TexturePack *m_dummyTexturePack;
 	TexturePack *m_dummyDLCTexturePack;
+	TexturePack *m_tu4TexturePack;
 
 	Minecraft *minecraft;
 	File workDir;

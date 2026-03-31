@@ -31,7 +31,34 @@ TexturePackRepository::TexturePackRepository(File workingDirectory, Minecraft *m
 
 	m_dummyTexturePack = nullptr;
 	m_dummyDLCTexturePack = nullptr;
+	m_tu4TexturePack = nullptr;
 	lastSelected = nullptr;
+
+#ifndef _CONTENT_PACKAGE
+	File *dummyTexturePackFolder = new File(L"DummyTexturePack");
+	if(dummyTexturePackFolder->exists() && dummyTexturePackFolder->isDirectory())
+	{
+		m_dummyTexturePack = new FolderTexturePack(FOLDER_TEST_TEXTURE_PACK_ID, L"Placeholder Texture Pack", dummyTexturePackFolder, DEFAULT_TEXTURE_PACK);
+		texturePacks->push_back(m_dummyTexturePack);
+		cacheById[m_dummyTexturePack->getId()] = m_dummyTexturePack;
+	}
+	else
+	{
+		delete dummyTexturePackFolder;
+	}
+
+	File *tu4TexturePackFolder = new File(L"TU4TexturePack");
+	if(tu4TexturePackFolder->exists() && tu4TexturePackFolder->isDirectory())
+	{
+		m_tu4TexturePack = new FolderTexturePack(TU4_TEXTURE_PACK_ID, L"Title Update 4", tu4TexturePackFolder, DEFAULT_TEXTURE_PACK);
+		texturePacks->push_back(m_tu4TexturePack);
+		cacheById[m_tu4TexturePack->getId()] = m_tu4TexturePack;
+	}
+	else
+	{
+		delete tu4TexturePackFolder;
+	}
+#endif
 
     updateList();
 }

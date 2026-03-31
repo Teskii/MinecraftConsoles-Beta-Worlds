@@ -48,6 +48,13 @@ void AbstractTexturePack::loadIcon()
 	UINT size = 0;
 	HRESULT hr = XuiResourceLoadAllNoLoc(szResourceLocator, &m_iconData, &size);
 	m_iconSize = size;
+#else
+	if(app.hasArchiveFile(L"Graphics\\TexturePackIcon.png"))
+	{
+		byteArray ba = app.getArchiveFile(L"Graphics\\TexturePackIcon.png");
+		m_iconData = ba.data;
+		m_iconSize = ba.length;
+	}
 #endif
 }
 
@@ -64,6 +71,13 @@ void AbstractTexturePack::loadComparison()
 	UINT size = 0;
 	HRESULT hr = XuiResourceLoadAllNoLoc(szResourceLocator, &m_comparisonData, &size);
 	m_comparisonSize = size;
+#else
+	if(app.hasArchiveFile(L"Graphics\\DefaultPack_Comparison.png"))
+	{
+		byteArray ba = app.getArchiveFile(L"Graphics\\DefaultPack_Comparison.png");
+		m_comparisonData = ba.data;
+		m_comparisonSize = ba.length;
+	}
 #endif
 }
 

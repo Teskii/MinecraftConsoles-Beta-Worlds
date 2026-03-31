@@ -3,6 +3,20 @@
 
 FolderTexturePack::FolderTexturePack(DWORD id, const wstring &name, File *folder, TexturePack *fallback) : AbstractTexturePack(id, folder, name, fallback)
 {
+	texname = name;
+	if (name == L"Placeholder Texture Pack")
+	{
+		desc1 = L"Uses the default Minecraft textures.";
+	}
+	else if (name == L"Title Update 4")
+	{
+		desc1 = L"Recreates the Xbox 360 TU4 look.";
+	}
+	else
+	{
+		desc1 = L"Uses resources from a local folder.";
+	}
+
 	// 4J Stu - These calls need to be in the most derived version of the class
 	loadIcon();
 	loadName();
@@ -22,14 +36,7 @@ InputStream *FolderTexturePack::getResourceImplementation(const wstring &name) /
 	return new BufferedInputStream(new FileInputStream(file));
 #endif
 
-	wstring wDrive = L"";
-	// Make the content package point to to the UPDATE: drive is needed
-#ifdef _XBOX
-	wDrive=L"GAME:\\DummyTexturePack\\res";
-#else
-	wDrive = L"Common\\DummyTexturePack\\res";
-#endif
-	InputStream *resource = InputStream::getResourceAsStream(wDrive + name);
+	InputStream *resource = InputStream::getResourceAsStream(getPath() + L"res" + name);
 	//InputStream *stream = DefaultTexturePack::class->getResourceAsStream(name);
 	//if (stream == nullptr)
 	//{

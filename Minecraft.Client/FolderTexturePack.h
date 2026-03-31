@@ -15,6 +15,9 @@ protected:
 	InputStream *getResourceImplementation(const wstring &name); //throws IOException
 
 public:
+	virtual DLCPack *getDLCPack() { return nullptr; }
+	virtual bool hasData() { return true; }
+	virtual bool isLoadingData() { return false; }
 	//@Override
 	bool hasFile(const wstring &name);
 	bool isTerrainUpdateCompatible();
