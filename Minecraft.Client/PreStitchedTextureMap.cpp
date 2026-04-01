@@ -78,7 +78,8 @@ void PreStitchedTextureMap::stitch()
 	// Create the final image
 	wstring filename = name + extension;
 
-	TexturePack *texturePack = Minecraft::GetInstance()->skins->getSelected();
+	TexturePack *selectedTexturePack = Minecraft::GetInstance()->skins->getSelected();
+	TexturePack *texturePack = selectedTexturePack;
 	//try {
 	int mode = Texture::TM_DYNAMIC;
 	int clamp = Texture::WM_WRAP; // 4J Stu - Don't clamp as it causes issues with how we signal non-mipmmapped textures to the pixel shader //Texture::WM_CLAMP;
@@ -117,6 +118,71 @@ void PreStitchedTextureMap::stitch()
 
 	//BufferedImage *image = new BufferedImage(texturePack->getResource(L"/" + filename),false,true,drive); //ImageIO::read(texturePack->getResource(L"/" + filename));
 	BufferedImage *image = texturePack->getImageResource(filename, false, true, drive);
+
+	auto applyLooseOverrides = [&](TexturePack *overridePack)
+	{
+		if(overridePack == nullptr)
+		{
+			return;
+		}
+
+		wstring overrideDrive = overridePack->getPath(true);
+		int atlasWidth = image->getWidth();
+		int atlasHeight = image->getHeight();
+		int *atlasPixels = image->getData();
+
+		for(auto &it : texturesByName)
+		{
+			auto *preStitched = static_cast<StitchedTexture *>(it.second);
+			if(preStitched == nullptr || preStitched == missingPosition)
+			{
+				continue;
+			}
+
+			wstring overrideFilename = path + preStitched->m_fileName + extension;
+			if(!overridePack->hasFile(L"res/" + overrideFilename, false))
+			{
+				continue;
+			}
+
+			BufferedImage *overrideImage = overridePack->getImageResource(overrideFilename, false, true, overrideDrive);
+			if(overrideImage == nullptr)
+			{
+				continue;
+			}
+
+			int x = preStitched->getU0() * atlasWidth;
+			int y = preStitched->getV0() * atlasHeight;
+			int width = (preStitched->getU1() * atlasWidth) - x;
+			int height = (preStitched->getV1() * atlasHeight) - y;
+
+			if(overrideImage->getWidth() == width && overrideImage->getHeight() == height)
+			{
+				int *overridePixels = overrideImage->getData();
+				for(int row = 0; row < height; ++row)
+				{
+					memcpy(atlasPixels + ((y + row) * atlasWidth) + x, overridePixels + (row * width), width * sizeof(int));
+				}
+			}
+#ifndef _CONTENT_PACKAGE
+			else
+			{
+				app.DebugPrintf("Skipping loose override %ls because dimensions (%d, %d) do not match atlas slot (%d, %d)\n",
+					overrideFilename.c_str(),
+					overrideImage->getWidth(),
+					overrideImage->getHeight(),
+					width,
+					height);
+			}
+#endif
+
+			delete overrideImage;
+		}
+	};
+
+	
+	applyLooseOverrides(selectedTexturePack);
+
 	MemSect(0);
 	int height = image->getHeight();
 	int width = image->getWidth();
