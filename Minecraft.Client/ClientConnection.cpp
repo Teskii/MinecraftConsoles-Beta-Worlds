@@ -1507,14 +1507,7 @@ void ClientConnection::handleTakeItemEntity(shared_ptr<TakeItemEntityPacket> pac
 
 			if( minecraft->localgameModes[playerPad] != nullptr )
 			{
-				// 4J-PB - add in the XP orb sound
-				if(from->GetType() == eTYPE_EXPERIENCEORB)
-				{
-					float fPitch=((random->nextFloat() - random->nextFloat()) * 0.7f + 1.0f) * 2.0f;
-					app.DebugPrintf("XP Orb with pitch %f\n",fPitch);
-					level->playSound(from, eSoundType_RANDOM_ORB, 0.2f, fPitch);
-				}
-				else
+				if(from->GetType() != eTYPE_EXPERIENCEORB)
 				{
 					level->playSound(from, eSoundType_RANDOM_POP, 0.2f, ((random->nextFloat() - random->nextFloat()) * 0.7f + 1.0f) * 2.0f);
 				}

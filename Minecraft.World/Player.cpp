@@ -2437,8 +2437,6 @@ void Player::giveExperienceLevels(int amount)
 
 	if (amount > 0 && experienceLevel % 5 == 0 && lastLevelUpTime < tickCount - SharedConstants::TICKS_PER_SECOND * 5.0f)
 	{
-		float vol = experienceLevel > 30 ? 1 : experienceLevel / 30.0f;
-		level->playEntitySound(shared_from_this(), eSoundType_RANDOM_LEVELUP, vol * 0.75f, 1);
 		lastLevelUpTime = tickCount;
 	}
 }

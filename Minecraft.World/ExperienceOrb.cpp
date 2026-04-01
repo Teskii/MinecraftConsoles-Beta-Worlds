@@ -195,8 +195,6 @@ void ExperienceOrb::playerTouch(shared_ptr<Player> player)
 	if (throwTime == 0 && player->takeXpDelay == 0)
 	{
 		player->takeXpDelay = 2;
-		// 4J - sound change brought forward from 1.2.3
-		playSound(eSoundType_RANDOM_ORB, 0.1f, 0.5f * ((random->nextFloat() - random->nextFloat()) * 0.7f + 1.8f));
 		player->take(shared_from_this(), 1);
 		player->increaseXp(value);
 		remove();
@@ -318,14 +316,6 @@ bool ExperienceOrb::isAttackable()
 // 4J added
 bool ExperienceOrb::shouldRender(Vec3 *c)
 {
-	double xd = x - c->x;
-	double yd = y - c->y;
-	double zd = z - c->z;
-	double distance = xd * xd + yd * yd + zd * zd;
-
-	// 4J - don't render experience orbs that are less than 2 metres away, to try and avoid large particles that are causing us problems with photosensitivity testing - issues when you go
-	// near a large pile of experience orbs that all rush towards the near clip plane
-	if( distance < 4 ) return false;
-
-	return Entity::shouldRender(c);
+	(void)c;
+	return false;
 }
