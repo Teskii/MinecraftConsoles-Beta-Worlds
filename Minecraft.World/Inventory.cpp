@@ -625,31 +625,45 @@ shared_ptr<ItemInstance> Inventory::getArmor(int layer)
 
 int Inventory::getArmorValue()
 {
-	int val = 0;
+	int totalDefense = 0;
+	int totalDurability = 0;
+	int totalRemainingDurability = 0;
+
 	for (unsigned int i = 0; i < armor.length; i++)
 	{
 		if (armor[i] != nullptr &&  dynamic_cast<ArmorItem *>( armor[i]->getItem() ) != nullptr )
 		{
-			int baseProtection = dynamic_cast<ArmorItem *>(armor[i]->getItem())->defense;
+			ArmorItem *armorItem = dynamic_cast<ArmorItem *>(armor[i]->getItem());
+			const int baseProtection = armorItem->defense;
+			const int maxDamage = armor[i]->getMaxDamage();
+			const int remainingDurability = max(maxDamage - armor[i]->getDamageValue(), 0);
 
-			val += baseProtection;
+			totalDefense += baseProtection;
+			totalDurability += maxDamage;
+			totalRemainingDurability += remainingDurability;
 		}
 	}
-	return val;
+
+	if (totalDefense <= 0 || totalDurability <= 0 || totalRemainingDurability <= 0)
+	{
+		return 0;
+	}
+
+	return ((totalRemainingDurability - 1) * totalDefense) / totalDurability + 1;
 }
 
 void Inventory::hurtArmor(float dmg)
 {
-	dmg = dmg / 4;
-	if (dmg < 1)
+	int armorDamage = static_cast<int>(dmg);
+	if (armorDamage < 1)
 	{
-		dmg = 1;
+		armorDamage = 1;
 	}
 	for (unsigned int i = 0; i < armor.length; i++)
 	{
 		if (armor[i] != nullptr && dynamic_cast<ArmorItem *>( armor[i]->getItem() ) != nullptr )
 		{
-			armor[i]->hurtAndBreak( static_cast<int>(dmg), dynamic_pointer_cast<LivingEntity>( player->shared_from_this() ) );
+			armor[i]->hurtAndBreak(armorDamage, dynamic_pointer_cast<LivingEntity>(player->shared_from_this()));
 			if (armor[i]->count == 0)
 			{
 				armor[i] = nullptr;

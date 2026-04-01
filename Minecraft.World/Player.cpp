@@ -77,6 +77,7 @@ void Player::_init()
 	minecartAchievementPos = nullptr;
 
 	fishing = nullptr;
+	m_betaArmorDamageRemainder = 0;
 
 	distanceWalk = distanceSwim = distanceFall = distanceClimb = distanceMinecart = distanceBoat = distancePig = 0;
 
@@ -987,6 +988,7 @@ void Player::resetPos()
 	setSize(0.6f, 1.8f);
 	LivingEntity::resetPos();
 	setHealth(getMaxHealth());
+	m_betaArmorDamageRemainder = 0;
 	deathTime = 0;
 }
 
@@ -1001,7 +1003,7 @@ void Player::aiStep()
 {
 	if (jumpTriggerTime > 0) jumpTriggerTime--;
 
-	if (level->difficulty == Difficulty::PEACEFUL && getHealth() < getMaxHealth() && level->getGameRules()->getBoolean(GameRules::RULE_NATURAL_REGENERATION))
+	if (level->difficulty == Difficulty::PEACEFUL && getHealth() < getMaxHealth())
 	{
 		if (tickCount % 20 * 12 == 0) heal(1);
 	}
@@ -1460,6 +1462,29 @@ float Player::getArmorCoverPercentage()
 		}
 	}
 	return static_cast<float>(count) / static_cast<float>(inventory->armor.length);
+}
+
+bool Player::isSprinting()
+{
+	return ENABLE_MODERN_SPRINT && LivingEntity::isSprinting();
+}
+
+void Player::setSprinting(bool value)
+{
+	LivingEntity::setSprinting(ENABLE_MODERN_SPRINT && value);
+}
+
+float Player::getDamageAfterArmorAbsorb(DamageSource *source, float dmg)
+{
+	if (!source->isBypassArmor())
+	{
+		const int absorb = 25 - getArmorValue();
+		const int scaledDamage = static_cast<int>(dmg * absorb + m_betaArmorDamageRemainder);
+		hurtArmor(dmg);
+		m_betaArmorDamageRemainder = scaledDamage % 25;
+		dmg = static_cast<float>(scaledDamage) / 25.0f;
+	}
+	return dmg;
 }
 
 void Player::actuallyHurt(DamageSource *source, float dmg)
@@ -2441,16 +2466,7 @@ int Player::getXpNeededForNextLevel()
 */
 void Player::causeFoodExhaustion(float amount)
 {
-	if( isAllowedToIgnoreExhaustion() || ( isAllowedToFly() && abilities.flying) ) return;
-	if (abilities.invulnerable || hasInvulnerablePrivilege() ) return;
-
-	// 4J Stu - Added 1.8.2 bug fix (TU6) - If players cannot eat, then their food bar should not decrease due to exhaustion
-	if(app.GetGameHostOption(eGameHostOption_TrustPlayers) == 0 && getPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotBuild) != 0) return;
-
-	if (!level->isClientSide)
-	{
-		foodData.addExhaustion(amount);
-	}
+	(void)amount;
 }
 
 FoodData *Player::getFoodData()
@@ -2460,7 +2476,7 @@ FoodData *Player::getFoodData()
 
 bool Player::canEat(bool magicalItem)
 {
-	return (magicalItem || foodData.needsFood()) && !abilities.invulnerable && !hasInvulnerablePrivilege();
+	return (magicalItem || isHurt()) && !abilities.invulnerable && !hasInvulnerablePrivilege();
 }
 
 bool Player::isHurt()

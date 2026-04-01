@@ -1162,7 +1162,7 @@ bool LocalPlayer::checkInTile(double x, double y, double z)
 void LocalPlayer::setSprinting(bool value)
 {
 	Player::setSprinting(value);
-	if (value == false) sprintTime = 0;
+	if (!Player::ENABLE_MODERN_SPRINT || !Player::isSprinting()) sprintTime = 0;
 	else sprintTime = SPRINT_DURATION;
 }
 

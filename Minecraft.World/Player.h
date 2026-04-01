@@ -40,6 +40,7 @@ public:
 	static const int MAX_HEALTH = 20;
 	static const int SLEEP_DURATION = 100;
 	static const int WAKE_UP_DURATION = 10;
+	static constexpr bool ENABLE_MODERN_SPRINT = false;
 
 	static const int CHAT_VISIBILITY_FULL = 0;
 	static const int CHAT_VISIBILITY_SYSTEM = 1;
@@ -70,6 +71,7 @@ public:
 protected:
 	FoodData foodData;
 	int jumpTriggerTime;
+	int m_betaArmorDamageRemainder;
 
 public:
 	BYTE userType;
@@ -239,8 +241,11 @@ protected:
 public:
 	virtual int getArmorValue();
 	virtual float getArmorCoverPercentage();
+	virtual bool isSprinting();
+	virtual void setSprinting(bool value);
 
 protected:
+	virtual float getDamageAfterArmorAbsorb(DamageSource *source, float dmg);
 	virtual void actuallyHurt(DamageSource *source, float dmg);
 
 public:

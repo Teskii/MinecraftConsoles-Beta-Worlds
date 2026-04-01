@@ -20,8 +20,10 @@ FoodData::FoodData()
 
 void FoodData::eat(int food, float saturationModifier)
 {
-	foodLevel = min(food + foodLevel, FoodConstants::MAX_FOOD);
-	saturationLevel = min(saturationLevel + (float) food * saturationModifier * 2.0f, (float)foodLevel);
+	foodLevel = FoodConstants::MAX_FOOD;
+	lastFoodLevel = FoodConstants::MAX_FOOD;
+	saturationLevel = FoodConstants::START_SATURATION;
+	exhaustionLevel = 0.0f;
 }
 
 void FoodData::eat(FoodItem *item)
@@ -31,67 +33,11 @@ void FoodData::eat(FoodItem *item)
 
 void FoodData::tick(shared_ptr<Player> player)
 {
-
-	int difficulty = player->level->difficulty;
-
-	lastFoodLevel = foodLevel;
-
-	if (exhaustionLevel > FoodConstants::EXHAUSTION_DROP)
-	{
-		exhaustionLevel -= FoodConstants::EXHAUSTION_DROP;
-
-		if (saturationLevel > 0)
-		{
-			saturationLevel = max(saturationLevel - 1, 0.0f);
-		}
-		else if (difficulty > Difficulty::PEACEFUL)
-		{
-			foodLevel = max(foodLevel - 1, 0);
-		}
-	}
-
-	// 4J: Added - Allow host to disable using hunger. We don't deplete the hunger bar due to exhaustion
-	// but I think we should deplete it to heal. Don't heal if natural regen is disabled
-	if(player->isAllowedToIgnoreExhaustion() && player->level->getGameRules()->getBoolean(GameRules::RULE_NATURAL_REGENERATION))
-	{
-		if(foodLevel > 0 && player->isHurt())
-		{
-			tickTimer++;
-			if (tickTimer >= FoodConstants::HEALTH_TICK_COUNT)
-			{
-				player->heal(1);
-				--foodLevel;
-				tickTimer = 0;
-			}
-		}
-	}
-	else if (player->level->getGameRules()->getBoolean(GameRules::RULE_NATURAL_REGENERATION) && foodLevel >= FoodConstants::HEAL_LEVEL && player->isHurt())
-	{
-		tickTimer++;
-		if (tickTimer >= FoodConstants::HEALTH_TICK_COUNT)
-		{
-			player->heal(1);
-			addExhaustion(FoodConstants::EXHAUSTION_HEAL);
-			tickTimer = 0;
-		}
-	}
-	else if (foodLevel <= FoodConstants::STARVE_LEVEL)
-	{
-		tickTimer++;
-		if (tickTimer >= FoodConstants::HEALTH_TICK_COUNT)
-		{
-			if (player->getHealth() > 10 || difficulty >= Difficulty::HARD || (player->getHealth() > 1 && difficulty >= Difficulty::NORMAL))
-			{
-				player->hurt(DamageSource::starve, 1);
-			}
-			tickTimer = 0;
-		}
-	}
-	else
-	{
-		tickTimer = 0;
-	}
-
+	foodLevel = FoodConstants::MAX_FOOD;
+	lastFoodLevel = FoodConstants::MAX_FOOD;
+	saturationLevel = FoodConstants::START_SATURATION;
+	exhaustionLevel = 0.0f;
+	tickTimer = 0;
 }
 
 void FoodData::readAdditionalSaveData(CompoundTag *entityTag)
@@ -131,7 +77,7 @@ bool FoodData::needsFood()
 
 void FoodData::addExhaustion(float amount)
 {
-	exhaustionLevel = min(exhaustionLevel + amount, FoodConstants::MAX_SATURATION * 2);
+	exhaustionLevel = 0.0f;
 }
 
 float FoodData::getExhaustionLevel()

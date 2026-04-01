@@ -100,7 +100,7 @@ void CakeTile::eat(Level *level, int x, int y, int z, shared_ptr<Player> player)
 {
 	if (player->canEat(false))
 	{
-		player->getFoodData()->eat(2, FoodConstants::FOOD_SATURATION_POOR);
+		player->heal(2.0f);
 
 		int d = level->getData(x, y, z) + 1;
 		if (d >= 6)
