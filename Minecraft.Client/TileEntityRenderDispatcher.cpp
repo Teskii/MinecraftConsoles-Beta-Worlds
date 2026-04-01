@@ -40,7 +40,8 @@ TileEntityRenderDispatcher::TileEntityRenderDispatcher()
 	renderers[eTYPE_SIGNTILEENTITY] = new SignRenderer();
 	renderers[eTYPE_MOBSPAWNERTILEENTITY] = new MobSpawnerRenderer();
 	renderers[eTYPE_PISTONPIECEENTITY] = new PistonPieceRenderer();
-	renderers[eTYPE_CHESTTILEENTITY] = new ChestRenderer();
+	// Beta 1.7.3 renders normal chests as block geometry, not a special animated tile entity.
+	renderers[eTYPE_CHESTTILEENTITY] = nullptr;
 	renderers[eTYPE_ENDERCHESTTILEENTITY] = new EnderChestRenderer();
 	renderers[eTYPE_ENCHANTMENTTABLEENTITY] = new EnchantTableRenderer();
 	renderers[eTYPE_THEENDPORTALTILEENTITY] = new TheEndPortalRenderer();

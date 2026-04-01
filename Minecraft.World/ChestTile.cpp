@@ -15,8 +15,15 @@ ChestTile::ChestTile(int id, int type) : BaseEntityTile(id, Material::wood, isSo
 {
 	random = new Random();
 	this->type = type;
+	topIcon = nullptr;
+	sideIcon = nullptr;
+	frontIcon = nullptr;
+	largeFrontLeftIcon = nullptr;
+	largeFrontRightIcon = nullptr;
+	largeBackLeftIcon = nullptr;
+	largeBackRightIcon = nullptr;
 
-	setShape(1 / 16.0f, 0, 1 / 16.0f, 15 / 16.0f, 14 / 16.0f, 15 / 16.0f);
+	setShape(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
 
 ChestTile::~ChestTile()
@@ -26,41 +33,156 @@ ChestTile::~ChestTile()
 
 bool ChestTile::isSolidRender(bool isServerLevel)
 {
-	return false;
+	return true;
 }
 
 bool ChestTile::isCubeShaped()
 {
-	return false;
+	return true;
 }
 
 int ChestTile::getRenderShape()
 {
-	return Tile::SHAPE_ENTITYTILE_ANIMATED;
+	return Tile::SHAPE_BLOCK;
+}
+
+Icon *ChestTile::getTextureByBetaIndex(int textureIndex)
+{
+	switch(textureIndex)
+	{
+	case 25:
+		return topIcon;
+	case 26:
+		return sideIcon;
+	case 27:
+		return frontIcon;
+	case 41:
+		return largeFrontLeftIcon;
+	case 42:
+		return largeFrontRightIcon;
+	case 57:
+		return largeBackLeftIcon;
+	case 58:
+		return largeBackRightIcon;
+	default:
+		return sideIcon != nullptr ? sideIcon : icon;
+	}
+}
+
+Icon *ChestTile::getTexture(LevelSource *level, int x, int y, int z, int face)
+{
+	if (face == Facing::UP || face == Facing::DOWN)
+	{
+		return getTextureByBetaIndex(25);
+	}
+
+	int north = level->getTile(x, y, z - 1);
+	int south = level->getTile(x, y, z + 1);
+	int west = level->getTile(x - 1, y, z);
+	int east = level->getTile(x + 1, y, z);
+
+	if (north != id && south != id)
+	{
+		if (west != id && east != id)
+		{
+			int frontFace = Facing::SOUTH;
+			if (Tile::solid[north] && !Tile::solid[south])
+			{
+				frontFace = Facing::SOUTH;
+			}
+			if (Tile::solid[south] && !Tile::solid[north])
+			{
+				frontFace = Facing::NORTH;
+			}
+			if (Tile::solid[west] && !Tile::solid[east])
+			{
+				frontFace = Facing::EAST;
+			}
+			if (Tile::solid[east] && !Tile::solid[west])
+			{
+				frontFace = Facing::WEST;
+			}
+
+			return getTextureByBetaIndex(face == frontFace ? 27 : 26);
+		}
+		else if (face != Facing::WEST && face != Facing::EAST)
+		{
+			int textureOffset = 0;
+			if (west == id)
+			{
+				textureOffset = -1;
+			}
+
+			int adjacentNorth = level->getTile(west == id ? x - 1 : x + 1, y, z - 1);
+			int adjacentSouth = level->getTile(west == id ? x - 1 : x + 1, y, z + 1);
+			if (face == Facing::SOUTH)
+			{
+				textureOffset = -1 - textureOffset;
+			}
+
+			int frontFace = Facing::SOUTH;
+			if ((Tile::solid[north] || Tile::solid[adjacentNorth]) && !Tile::solid[south] && !Tile::solid[adjacentSouth])
+			{
+				frontFace = Facing::SOUTH;
+			}
+			if ((Tile::solid[south] || Tile::solid[adjacentSouth]) && !Tile::solid[north] && !Tile::solid[adjacentNorth])
+			{
+				frontFace = Facing::NORTH;
+			}
+
+			return getTextureByBetaIndex((face == frontFace ? 42 : 58) + textureOffset);
+		}
+		else
+		{
+			return getTextureByBetaIndex(26);
+		}
+	}
+	else if (face != Facing::NORTH && face != Facing::SOUTH)
+	{
+		int textureOffset = 0;
+		if (north == id)
+		{
+			textureOffset = -1;
+		}
+
+		int adjacentWest = level->getTile(x - 1, y, north == id ? z - 1 : z + 1);
+		int adjacentEast = level->getTile(x + 1, y, north == id ? z - 1 : z + 1);
+		if (face == Facing::WEST)
+		{
+			textureOffset = -1 - textureOffset;
+		}
+
+		int frontFace = Facing::EAST;
+		if ((Tile::solid[west] || Tile::solid[adjacentWest]) && !Tile::solid[east] && !Tile::solid[adjacentEast])
+		{
+			frontFace = Facing::EAST;
+		}
+		if ((Tile::solid[east] || Tile::solid[adjacentEast]) && !Tile::solid[west] && !Tile::solid[adjacentWest])
+		{
+			frontFace = Facing::WEST;
+		}
+
+		return getTextureByBetaIndex((face == frontFace ? 42 : 58) + textureOffset);
+	}
+	else
+	{
+		return getTextureByBetaIndex(26);
+	}
+}
+
+Icon *ChestTile::getTexture(int face, int data)
+{
+	if (face == Facing::UP || face == Facing::DOWN)
+	{
+		return topIcon;
+	}
+
+	return face == Facing::SOUTH ? frontIcon : sideIcon;
 }
 
 void ChestTile::updateShape(LevelSource *level, int x, int y, int z, int forceData, shared_ptr<TileEntity> forceEntity)
 {
-	if (level->getTile(x, y, z - 1) == id)
-	{
-		setShape(1 / 16.0f, 0, 0, 15 / 16.0f, 14 / 16.0f, 15 / 16.0f);
-	}
-	else if (level->getTile(x, y, z + 1) == id)
-	{
-		setShape(1 / 16.0f, 0, 1 / 16.0f, 15 / 16.0f, 14 / 16.0f, 1);
-	}
-	else if (level->getTile(x - 1, y, z) == id)
-	{
-		setShape(0, 0, 1 / 16.0f, 15 / 16.0f, 14 / 16.0f, 15 / 16.0f);
-	}
-	else if (level->getTile(x + 1, y, z) == id)
-	{
-		setShape(1 / 16.0f, 0, 1 / 16.0f, 1, 14 / 16.0f, 15 / 16.0f);
-	}
-	else
-	{
-		setShape(1 / 16.0f, 0, 1 / 16.0f, 15 / 16.0f, 14 / 16.0f, 15 / 16.0f);
-	}
+	setShape(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void ChestTile::onPlace(Level *level, int x, int y, int z)
@@ -365,7 +487,13 @@ int ChestTile::getAnalogOutputSignal(Level *level, int x, int y, int z, int dir)
 
 void ChestTile::registerIcons(IconRegister *iconRegister) 
 {
-	// Register wood as the chest's icon, because it's used by the particles
-	// when destroying the chest
-	icon = iconRegister->registerIcon(L"planks_oak");
+	const wstring prefix = (type == TYPE_TRAP) ? L"chest_beta_trapped_" : L"chest_beta_";
+	topIcon = iconRegister->registerIcon(prefix + L"top");
+	sideIcon = iconRegister->registerIcon(prefix + L"side");
+	frontIcon = iconRegister->registerIcon(prefix + L"front");
+	largeFrontLeftIcon = iconRegister->registerIcon(prefix + L"large_front_left");
+	largeFrontRightIcon = iconRegister->registerIcon(prefix + L"large_front_right");
+	largeBackLeftIcon = iconRegister->registerIcon(prefix + L"large_back_left");
+	largeBackRightIcon = iconRegister->registerIcon(prefix + L"large_back_right");
+	icon = sideIcon;
 }

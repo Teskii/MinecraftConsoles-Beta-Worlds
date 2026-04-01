@@ -18,6 +18,13 @@ public:
 
 private:
 	Random *random;
+	Icon *topIcon;
+	Icon *sideIcon;
+	Icon *frontIcon;
+	Icon *largeFrontLeftIcon;
+	Icon *largeFrontRightIcon;
+	Icon *largeBackLeftIcon;
+	Icon *largeBackRightIcon;
 
 public:
 	int type;
@@ -30,6 +37,8 @@ public:
 	virtual bool isSolidRender(bool isServerLevel = false);
 	virtual bool isCubeShaped();
 	virtual int getRenderShape();
+	virtual Icon *getTexture(LevelSource *level, int x, int y, int z, int face);
+	virtual Icon *getTexture(int face, int data);
 	virtual void updateShape(LevelSource *level, int x, int y, int z, int forceData, shared_ptr<TileEntity> forceEntity = shared_ptr<TileEntity>());
 	virtual void onPlace(Level *level, int x, int y, int z);
 	virtual void setPlacedBy(Level *level, int x, int y, int z, shared_ptr<LivingEntity> by, shared_ptr<ItemInstance> itemInstance);
@@ -38,6 +47,7 @@ public:
 
 private:
 	bool isFullChest(Level *level, int x, int y, int z);
+	Icon *getTextureByBetaIndex(int textureIndex);
 
 public:
 	virtual void neighborChanged(Level *level, int x, int y, int z, int type);

@@ -1057,5 +1057,22 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(19,	13,	L"glass_pane_top_silver");
 		ADD_ICON(19,	14,	L"glass_pane_top_white");
 		ADD_ICON(19,	15,	L"glass_pane_top_yellow");
+
+		// Beta full-block chest faces live in loose block-texture overrides.
+		// Give them stable atlas slots in the unused lower terrain rows.
+		ADD_ICON(20,	0,	L"chest_beta_top");
+		ADD_ICON(20,	1,	L"chest_beta_side");
+		ADD_ICON(20,	2,	L"chest_beta_front");
+		ADD_ICON(20,	3,	L"chest_beta_trapped_top");
+		ADD_ICON(20,	4,	L"chest_beta_trapped_side");
+		ADD_ICON(20,	5,	L"chest_beta_trapped_front");
+		ADD_ICON(20,	6,	L"chest_beta_large_front_left");
+		ADD_ICON(20,	7,	L"chest_beta_large_front_right");
+		ADD_ICON(20,	8,	L"chest_beta_large_back_left");
+		ADD_ICON(20,	9,	L"chest_beta_large_back_right");
+		ADD_ICON(20,	10,	L"chest_beta_trapped_large_front_left");
+		ADD_ICON(20,	11,	L"chest_beta_trapped_large_front_right");
+		ADD_ICON(20,	12,	L"chest_beta_trapped_large_back_left");
+		ADD_ICON(20,	13,	L"chest_beta_trapped_large_back_right");
 	}
 }
