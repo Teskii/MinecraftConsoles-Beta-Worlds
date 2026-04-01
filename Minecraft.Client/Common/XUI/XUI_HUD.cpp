@@ -119,7 +119,6 @@ HRESULT CXuiSceneHud::OnCustomMessage_TickScene()
 		pos.y = iTooltipsYOffset + iSafezoneYHalf;
 		m_hudGroup.SetPosition(&pos);
 	}
-
 	// Update inventory
 	float opacity = 1.0f;
 	GetOpacity(&opacity);
@@ -272,7 +271,7 @@ HRESULT CXuiSceneHud::OnCustomMessage_TickScene()
 
 		}
 
-		// Update food
+		
 		bool foodBlink = false;
 		FoodData *foodData = pMinecraft->localplayers[m_iPad]->getFoodData();
 		int food = foodData->getFoodLevel();
