@@ -1741,56 +1741,75 @@ void GameRenderer::tickLavaAmbient()
 
 	const int sampleRadiusXZ = 8;
 	const int sampleRadiusY = 4;
-	const int sampleCount = 96;
 
 	int x0 = Mth::floor(player->x);
 	int y0 = Mth::floor(player->y);
 	int z0 = Mth::floor(player->z);
 
-	int lavaPosSamples = 0;
+	bool foundLava = false;
+	float closestDistSq = FLT_MAX;
 	double lavaPosX = 0.0;
 	double lavaPosY = 0.0;
 	double lavaPosZ = 0.0;
 
-	random->setSeed((_tick * 1103515245LL) + 0x4C415641);
-
-	for (int i = 0; i < sampleCount; i++)
+	for (int y = y0 - sampleRadiusY; y <= y0 + sampleRadiusY; y++)
 	{
-		int x = x0 + random->nextInt(sampleRadiusXZ * 2 + 1) - sampleRadiusXZ;
-		int y = y0 + random->nextInt(sampleRadiusY * 2 + 1) - sampleRadiusY;
-		int z = z0 + random->nextInt(sampleRadiusXZ * 2 + 1) - sampleRadiusXZ;
-
-		int tileId = level->getTile(x, y, z);
-		if (tileId <= 0 || Tile::tiles[tileId] == nullptr || Tile::tiles[tileId]->material != Material::lava)
+		for (int z = z0 - sampleRadiusXZ; z <= z0 + sampleRadiusXZ; z++)
 		{
-			continue;
-		}
-
-		if (level->getMaterial(x, y + 1, z) == Material::air && !level->isSolidRenderTile(x, y + 1, z))
-		{
-			if (random->nextInt(++lavaPosSamples) == 0)
+			for (int x = x0 - sampleRadiusXZ; x <= x0 + sampleRadiusXZ; x++)
 			{
-				lavaPosX = x + 0.5f;
-				lavaPosY = y + 0.5f;
-				lavaPosZ = z + 0.5f;
+				int tileId = level->getTile(x, y, z);
+				if (tileId <= 0 || Tile::tiles[tileId] == nullptr || Tile::tiles[tileId]->material != Material::lava)
+				{
+					continue;
+				}
+
+				if (level->getMaterial(x, y + 1, z) != Material::air || level->isSolidRenderTile(x, y + 1, z))
+				{
+					continue;
+				}
+
+				float sampleX = x + 0.5f;
+				float sampleY = y + 0.5f;
+				float sampleZ = z + 0.5f;
+				float dx = sampleX - player->x;
+				float dy = sampleY - player->y;
+				float dz = sampleZ - player->z;
+				float distSq = dx * dx + dy * dy + dz * dz;
+				if (distSq < closestDistSq)
+				{
+					closestDistSq = distSq;
+					lavaPosX = sampleX;
+					lavaPosY = sampleY;
+					lavaPosZ = sampleZ;
+					foundLava = true;
+				}
 			}
 		}
 	}
 
-	if (lavaPosSamples <= 0)
+	if (!foundLava)
 	{
 		lavaSoundTime = 0;
 		return;
 	}
 
-	if (random->nextInt(2) < lavaSoundTime++)
+	if (++lavaSoundTime >= 1)
 	{
-		lavaSoundTime = 0;
-		level->playLocalSound(lavaPosX, lavaPosY, lavaPosZ, eSoundType_LIQUID_LAVA, 0.7f, 0.95f + random->nextFloat() * 0.1f, false, 32.0f);
+		const bool isVeryClose = closestDistSq <= 16.0f;
+		const bool isClose = closestDistSq <= 49.0f;
+		const bool playPop = isVeryClose && random->nextInt(5) == 0;
 
-		if (random->nextInt(4) == 0)
+		if (playPop)
 		{
-			level->playLocalSound(lavaPosX, lavaPosY, lavaPosZ, eSoundType_LIQUID_LAVA_POP, 0.5f, 0.9f + random->nextFloat() * 0.15f, false, 32.0f);
+			mc->soundEngine->play(eSoundType_LIQUID_LAVA_POP, static_cast<float>(lavaPosX), static_cast<float>(lavaPosY), static_cast<float>(lavaPosZ), 0.45f, 0.9f + random->nextFloat() * 0.12f);
+			lavaSoundTime = -(isVeryClose ? 44 + random->nextInt(18) : 60 + random->nextInt(24));
+		}
+		else
+		{
+			float volume = isVeryClose ? 0.55f : (isClose ? 0.42f : 0.30f);
+			mc->soundEngine->play(eSoundType_LIQUID_LAVA, static_cast<float>(lavaPosX), static_cast<float>(lavaPosY), static_cast<float>(lavaPosZ), volume, 0.95f + random->nextFloat() * 0.08f);
+			lavaSoundTime = -(isVeryClose ? 55 + random->nextInt(20) : (isClose ? 75 + random->nextInt(30) : 95 + random->nextInt(35)));
 		}
 	}
 }
