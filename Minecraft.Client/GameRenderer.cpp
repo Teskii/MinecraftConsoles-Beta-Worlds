@@ -114,6 +114,7 @@ GameRenderer::GameRenderer(Minecraft *mc)
 	lastNsTime = 0;
 	random = new Random();
 	rainSoundTime = 0;
+	lavaSoundTime = 0;
 	xMod = 0;
 	yMod = 0;
 	lb = MemoryTracker::createFloatBuffer(16);
@@ -228,6 +229,8 @@ void GameRenderer::tick(bool first)		// 4J - add bFirst
 	PIXBeginNamedEvent(0,"Rain tick");
 	tickRain();
 	PIXEndNamedEvent();
+
+	tickLavaAmbient();
 
 	darkenWorldAmountO = darkenWorldAmount;
 	if (BossMobGuiInfo::darkenWorld)
@@ -1723,6 +1726,73 @@ void GameRenderer::tickRain()
 		MemSect(0);
 	}
 
+}
+
+void GameRenderer::tickLavaAmbient()
+{
+	if (mc->level == nullptr || mc->cameraTargetPlayer == nullptr)
+	{
+		lavaSoundTime = 0;
+		return;
+	}
+
+	shared_ptr<LivingEntity> player = mc->cameraTargetPlayer;
+	Level *level = mc->level;
+
+	const int sampleRadiusXZ = 8;
+	const int sampleRadiusY = 4;
+	const int sampleCount = 96;
+
+	int x0 = Mth::floor(player->x);
+	int y0 = Mth::floor(player->y);
+	int z0 = Mth::floor(player->z);
+
+	int lavaPosSamples = 0;
+	double lavaPosX = 0.0;
+	double lavaPosY = 0.0;
+	double lavaPosZ = 0.0;
+
+	random->setSeed((_tick * 1103515245LL) + 0x4C415641);
+
+	for (int i = 0; i < sampleCount; i++)
+	{
+		int x = x0 + random->nextInt(sampleRadiusXZ * 2 + 1) - sampleRadiusXZ;
+		int y = y0 + random->nextInt(sampleRadiusY * 2 + 1) - sampleRadiusY;
+		int z = z0 + random->nextInt(sampleRadiusXZ * 2 + 1) - sampleRadiusXZ;
+
+		int tileId = level->getTile(x, y, z);
+		if (tileId <= 0 || Tile::tiles[tileId] == nullptr || Tile::tiles[tileId]->material != Material::lava)
+		{
+			continue;
+		}
+
+		if (level->getMaterial(x, y + 1, z) == Material::air && !level->isSolidRenderTile(x, y + 1, z))
+		{
+			if (random->nextInt(++lavaPosSamples) == 0)
+			{
+				lavaPosX = x + 0.5f;
+				lavaPosY = y + 0.5f;
+				lavaPosZ = z + 0.5f;
+			}
+		}
+	}
+
+	if (lavaPosSamples <= 0)
+	{
+		lavaSoundTime = 0;
+		return;
+	}
+
+	if (random->nextInt(2) < lavaSoundTime++)
+	{
+		lavaSoundTime = 0;
+		level->playLocalSound(lavaPosX, lavaPosY, lavaPosZ, eSoundType_LIQUID_LAVA, 0.7f, 0.95f + random->nextFloat() * 0.1f, false, 32.0f);
+
+		if (random->nextInt(4) == 0)
+		{
+			level->playLocalSound(lavaPosX, lavaPosY, lavaPosZ, eSoundType_LIQUID_LAVA_POP, 0.5f, 0.9f + random->nextFloat() * 0.15f, false, 32.0f);
+		}
+	}
 }
 
 // 4J - this whole function updated from 1.8.2

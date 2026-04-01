@@ -2605,29 +2605,6 @@ void LevelRenderer::playStreamingMusic(const wstring& name, int x, int y, int z)
 
 void LevelRenderer::playSound(int iSound, double x, double y, double z, float volume, float pitch, float fSoundClipDist)
 {
-	// 4J-PB - removed in 1.4
-
-	//float dd = 16;
-	/*if (volume > 1) fSoundClipDist *= volume;
-
-	// 4J - find min distance to any players rather than just the current one
-	float minDistSq = FLT_MAX;
-	for( int i = 0; i < XUSER_MAX_COUNT; i++ )
-	{
-	if( mc->localplayers[i] )
-	{
-	float distSq = mc->localplayers[i]->distanceToSqr(x, y, z );
-	if( distSq < minDistSq )
-	{
-	minDistSq = distSq;
-	}
-	}
-	}
-
-	if (minDistSq < fSoundClipDist * fSoundClipDist)
-	{
-	mc->soundEngine->play(iSound, (float) x, (float) y, (float) z, volume, pitch);
-	}	*/
 }
 
 void LevelRenderer::playSound(shared_ptr<Entity> entity,int iSound, double x, double y, double z, float volume, float pitch, float fSoundClipDist)

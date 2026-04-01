@@ -141,6 +141,8 @@ private:
     int rainSoundTime;
 	void prepareAndRenderClouds(LevelRenderer *levelRenderer, float a);
     void tickRain();
+	int lavaSoundTime;
+	void tickLavaAmbient();
 private:
 	// 4J - brought forward from 1.8.2
 	float *rainXa;

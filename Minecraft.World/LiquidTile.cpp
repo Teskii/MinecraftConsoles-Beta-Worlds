@@ -315,20 +315,18 @@ void LiquidTile::animateTick(Level *level, int x, int y, int z, Random *random)
 	{
 		if (level->getMaterial(x, y + 1, z) == Material::air && !level->isSolidRenderTile(x, y + 1, z))
 		{
-			if (random->nextInt(100) == 0)
+			if (random->nextInt(40) == 0)
 			{
 				ThreadStorage *tls = static_cast<ThreadStorage *>(TlsGetValue(Tile::tlsIdxShape));
 				double xx = x + random->nextFloat();
 				double yy = y + tls->yy1;
 				double zz = z + random->nextFloat();
 				level->addParticle(eParticleType_lava, xx, yy, zz, 0, 0, 0);
-				// 4J - new sound brought forward from 1.2.3
-				level->playLocalSound(xx, yy, zz, eSoundType_LIQUID_LAVA_POP, 0.2f + random->nextFloat() * 0.2f, 0.9f + random->nextFloat() * 0.15f, false);
+				level->playSound(xx, yy, zz, eSoundType_LIQUID_LAVA_POP, 0.45f + random->nextFloat() * 0.2f, 0.9f + random->nextFloat() * 0.15f);
 			}
-			// 4J - new sound brought forward from 1.2.3
-			if (random->nextInt(200) == 0)
+			if (random->nextInt(80) == 0)
 			{
-				level->playLocalSound(x, y, z, eSoundType_LIQUID_LAVA, 0.2f + random->nextFloat() * 0.2f, 0.9f + random->nextFloat() * 0.15f, false);
+				level->playSound(x, y, z, eSoundType_LIQUID_LAVA, 0.4f + random->nextFloat() * 0.2f, 0.9f + random->nextFloat() * 0.15f);
 			}
 		}
 	}
