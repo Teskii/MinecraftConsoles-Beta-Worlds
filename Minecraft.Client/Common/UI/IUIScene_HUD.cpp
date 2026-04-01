@@ -209,15 +209,10 @@ void IUIScene_HUD::renderPlayerHealth()
 	SetHealth(currentHealth, oldHealth, blink, bHasPoison || bHasWither, bHasWither);
 	SetHealthAbsorb(totalAbsorption);
 
-	if(armor > 0)
-	{
-		ShowArmour(true);
-		SetArmour(armor);
-	}
-	else
-	{
-		ShowArmour(false);
-	}
+	// The beta-style HUD uses the right-hand row for armour.
+	// The left-hand armour row is hidden and the visible "food" row
+	// is driven from armour values instead.
+	ShowArmour(false);
 
 	shared_ptr<Entity> riding = pMinecraft->localplayers[iPad]->riding;
 
@@ -229,16 +224,11 @@ void IUIScene_HUD::renderPlayerHealth()
 		ShowHorseHealth(false);
 		m_horseHealth = 0;
 
-		// Update food
-		//bool foodBlink = false;
-		FoodData *foodData = pMinecraft->localplayers[iPad]->getFoodData();
-		int food = foodData->getFoodLevel();
-		int oldFood = foodData->getLastFoodLevel();
-		bool hasHungerEffect = pMinecraft->localplayers[iPad]->hasEffect(MobEffect::hunger);
-		int saturationLevel = pMinecraft->localplayers[iPad]->getFoodData()->getSaturationLevel();
-
-		SetFood(food, oldFood, hasHungerEffect);
-		SetFoodSaturationLevel(saturationLevel);
+		// Feed the visible right-side row from armour values instead of hunger.
+		// We also keep saturation positive and poison false so the repurposed
+		// row doesn't jitter or animate like hunger.
+		SetFood(armor, armor, false);
+		SetFoodSaturationLevel(1);
 
 		// Update air
 		if (pMinecraft->localplayers[iPad]->isUnderLiquid(Material::water))

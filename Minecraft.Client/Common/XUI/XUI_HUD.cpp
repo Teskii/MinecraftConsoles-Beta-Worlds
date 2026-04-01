@@ -271,120 +271,35 @@ HRESULT CXuiSceneHud::OnCustomMessage_TickScene()
 
 		}
 
-		
-		bool foodBlink = false;
-		FoodData *foodData = pMinecraft->localplayers[m_iPad]->getFoodData();
-		int food = foodData->getFoodLevel();
-		int oldFood = foodData->getLastFoodLevel();
-		bool hasHungerEffect = pMinecraft->localplayers[m_iPad]->hasEffect(MobEffect::hunger);
-		int saturationLevel = pMinecraft->localplayers[m_iPad]->getFoodData()->getSaturationLevel();
+		// The beta HUD layout uses the right-side row for armour instead of hunger.
+		// We keep the food controls visible because the HUD SWF art on Windows64 has
+		// already been repurposed to armour icons there.
+		int armor = pMinecraft->localplayers[m_iPad]->getArmorValue();
+		m_foodGroup.SetShow(TRUE);
 		for (int icon = 0; icon < 10; icon++)
 		{
-			if(foodBlink)
+			if (icon * 2 + 1 < armor)
 			{
-				if (icon * 2 + 1 < oldFood || icon * 2 + 1 < food)
-				{
-					// Full
-					if(hasHungerEffect)
-					{
-						m_foodIcon[icon].PlayVisualRange(L"FullPoisonFlash",nullptr,L"FullPoisonFlash");
-					}
-					else
-					{
-						m_foodIcon[icon].PlayVisualRange(L"FullFlash",nullptr,L"FullFlash");
-					}
-				}
-				else if (icon * 2 + 1 == oldFood || icon * 2 + 1 == food)
-				{
-					// Half
-					if(hasHungerEffect)
-					{
-						m_foodIcon[icon].PlayVisualRange(L"HalfPoisonFlash",nullptr,L"HalfPoisonFlash");
-					}
-					else
-					{
-						m_foodIcon[icon].PlayVisualRange(L"HalfFlash",nullptr,L"HalfFlash");
-					}
-				}
-				else
-				{
-					// Empty
-					m_foodIcon[icon].PlayVisualRange(L"NormalFlash",nullptr,L"NormalFlash");
-				}
+				m_foodIcon[icon].PlayVisualRange(L"Full",nullptr,L"Full");
+			}
+			else if (icon * 2 + 1 == armor)
+			{
+				m_foodIcon[icon].PlayVisualRange(L"Half",nullptr,L"Half");
 			}
 			else
 			{
-				if (icon * 2 + 1 < food)
-				{
-					// Full
-					if(hasHungerEffect)
-					{
-						m_foodIcon[icon].PlayVisualRange(L"FullPoison",nullptr,L"FullPoison");
-					}
-					else
-					{
-						m_foodIcon[icon].PlayVisualRange(L"Full",nullptr,L"Full");
-					}
-				}
-				else if (icon * 2 + 1 == food)
-				{
-					// Half
-					if(hasHungerEffect)
-					{
-						m_foodIcon[icon].PlayVisualRange(L"HalfPoison",nullptr,L"HalfPoison");
-					}
-					else
-					{
-						m_foodIcon[icon].PlayVisualRange(L"Half",nullptr,L"Half");
-					}
-				}
-				else
-				{
-					// Empty
-					if(hasHungerEffect)
-					{
-						m_foodIcon[icon].PlayVisualRange(L"NormalPoison",nullptr,L"NormalPoison");
-					}
-					else
-					{
-						m_foodIcon[icon].PlayVisualRange(L"Normal",nullptr,L"Normal");
-					}
-				}
-			}
-
-				
-			float yo = 0;
-			if (saturationLevel <= 0)
-			{
-				if ((m_tickCount % (food * 3 + 1)) == 0)
-				{
-					yo = static_cast<float>(m_random.nextInt(3) - 1) * (iGuiScale+1);
-				}
+				m_foodIcon[icon].PlayVisualRange(L"Normal",nullptr,L"Normal");
 			}
 
 			D3DXVECTOR3 pos;
 			m_foodIcon[icon].GetPosition(&pos);
-			// TODO - 4J Stu - This should be scaled based on gui scale and overall size (ie full, split or 480)
-			pos.y = yo;
+			pos.y = 0.0f;
 			m_foodIcon[icon].SetPosition(&pos);
 		}
 
-		// Update armour
-		int armor = pMinecraft->localplayers[m_iPad]->getArmorValue();
-		if(armor > 0)
-		{
-			m_armourGroup.SetShow(TRUE);
-			for (int icon = 0; icon < 10; icon++)
-			{
-				if (icon * 2 + 1 < armor) m_armourIcon[icon].PlayVisualRange(L"Full",nullptr,L"Full");
-				else if (icon * 2 + 1 == armor) m_armourIcon[icon].PlayVisualRange(L"Half",nullptr,L"Half");
-				else if (icon * 2 + 1 > armor) m_armourIcon[icon].PlayVisualRange(L"Normal",nullptr,L"Normal");
-			}
-		}
-		else
-		{
-			m_armourGroup.SetShow(FALSE);
-		}
+		// Hide the original left-side armour row because the right-side row now
+		// represents armour.
+		m_armourGroup.SetShow(FALSE);
 
 		// Update air
 		if (pMinecraft->localplayers[m_iPad]->isUnderLiquid(Material::water))
