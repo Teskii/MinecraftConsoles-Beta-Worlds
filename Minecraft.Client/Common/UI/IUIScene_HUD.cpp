@@ -180,12 +180,6 @@ void IUIScene_HUD::renderPlayerHealth()
 	float maxHealth = static_cast<float>(maxHealthAttribute->getValue());
 	float totalAbsorption = pMinecraft->localplayers[iPad]->getAbsorptionAmount();
 
-	// Reuse a periodic warning animation when the player is at 2 hearts or below.
-	// This gives the health row the same kind of urgency the hunger row normally has
-	// when starving, while leaving the repurposed armour row stable.
-	bool lowHealthBlink = currentHealth > 0 && currentHealth <= 4 && ((GetTickCount() / 250) % 2 == 0);
-	blink = blink || lowHealthBlink;
-
 	// Update armour
 	int armor = pMinecraft->localplayers[iPad]->getArmorValue();
 

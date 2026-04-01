@@ -14,6 +14,7 @@
 void FoodItem::_init()
 {
 	// 4J Initialisers
+	setMaxStackSize(1);
 	canAlwaysEat = false;
 	effectId = 0;
 	effectDurationSeconds = 0;

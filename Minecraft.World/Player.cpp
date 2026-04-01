@@ -1466,12 +1466,14 @@ float Player::getArmorCoverPercentage()
 
 bool Player::isSprinting()
 {
-	return ENABLE_MODERN_SPRINT && LivingEntity::isSprinting();
+	const bool allowSprint = ENABLE_MODERN_SPRINT || abilities.instabuild || abilities.mayfly || isAllowedToFly();
+	return allowSprint && LivingEntity::isSprinting();
 }
 
 void Player::setSprinting(bool value)
 {
-	LivingEntity::setSprinting(ENABLE_MODERN_SPRINT && value);
+	const bool allowSprint = ENABLE_MODERN_SPRINT || abilities.instabuild || abilities.mayfly || isAllowedToFly();
+	LivingEntity::setSprinting(allowSprint && value);
 }
 
 float Player::getDamageAfterArmorAbsorb(DamageSource *source, float dmg)
