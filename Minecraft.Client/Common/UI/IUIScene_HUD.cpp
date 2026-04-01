@@ -220,7 +220,7 @@ void IUIScene_HUD::renderPlayerHealth()
 	{
 		SetRidingHorse(false, false, 0);
 
-		ShowFood(true);
+		ShowFood(armor > 0);
 		ShowHorseHealth(false);
 		m_horseHealth = 0;
 
