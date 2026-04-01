@@ -103,18 +103,9 @@ void IUIScene_HUD::updateFrameTick()
 	{
 		SetHorseJumpBarProgress(pMinecraft->localplayers[iPad]->getJumpRidingScale());
 	}
-	else if (pMinecraft->localgameModes[iPad]->hasExperience())
-	{
-		// Update xp progress
-		ShowExpBar(true);
-
-		SetExpBarProgress(pMinecraft->localplayers[iPad]->experienceProgress, pMinecraft->localplayers[iPad]->getXpNeededForNextLevel());
-
-		// Update xp level
-		SetExpLevel(pMinecraft->localplayers[iPad]->experienceLevel);
-	}
 	else
 	{
+		// Hide the post-beta XP HUD so the hotbar matches the classic layout.
 		ShowExpBar(false);
 		SetExpLevel(0);
 	}
